@@ -128,7 +128,54 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Scripts JavaScript continuam iguais ao fornecido
+      const form = document.getElementById("expositorForm");
+      const logoInput = document.getElementById("logo");
+      const logoPreview = document.getElementById("logoPreview");
+      const imageInput = document.getElementById("image");
+      const imagePreview = document.getElementById("imagePreview");
+      const statusDiv = document.getElementById("status");
+      const deleteButton = document.getElementById("deleteButton");
+
+      const previewImage = (input, previewElement) => {
+        const file = input.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            previewElement.src = reader.result;
+            previewElement.classList.remove("d-none");
+          };
+          reader.readAsDataURL(file);
+        } else {
+          previewElement.classList.add("d-none");
+        }
+      };
+
+      logoInput.addEventListener("change", () => previewImage(logoInput, logoPreview));
+      imageInput.addEventListener("change", () => previewImage(imageInput, imagePreview));
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("name").value;
+        const description = document.getElementById("description").value;
+        const category = document.getElementById("category").value;
+
+        if (!name || !description || !category) {
+          statusDiv.textContent = "Preencha todos os campos obrigatórios.";
+          statusDiv.className = "text-danger";
+          return;
+        }
+
+        statusDiv.textContent = "Expositor salvo com sucesso!";
+        statusDiv.className = "text-success";
+      });
+
+      deleteButton.addEventListener("click", () => {
+        form.reset();
+        logoPreview.classList.add("d-none");
+        imagePreview.classList.add("d-none");
+        statusDiv.textContent = "Cadastro deletado.";
+        statusDiv.className = "text-warning";
+      });
     </script>
   </body>
 </html>
