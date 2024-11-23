@@ -39,9 +39,9 @@
       /* Logo do expositor */
       .logo-overlay {
         position: absolute;
-        bottom: -70px; /* Metade do tamanho do logo */
+        bottom: 0;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translate(-50%, 50%);
         background: #ffffff;
         border: 2px solid #dcdcdc;
         border-radius: 50%;
@@ -50,7 +50,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        z-index: 10;
       }
       .logo-overlay img {
         width: 120px;
@@ -61,7 +62,7 @@
 
       /* Corpo do card */
       .card-body {
-        padding-top: 90px; /* Espaço para o logo sobreposto */
+        padding-top: 70px; /* Ajustado para evitar sobreposição do logo */
       }
       .card-title {
         font-size: 1.2rem;
