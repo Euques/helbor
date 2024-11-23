@@ -10,21 +10,50 @@
       rel="stylesheet"
     />
     <style>
+      .card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      .card-img-container {
+        position: relative;
+      }
       .card-img-top {
         width: 100%;
         height: 200px;
         object-fit: cover;
       }
-      .logo-container {
-        position: relative;
-        text-align: center;
-      }
-      .logo-container img {
-        max-height: 80px;
-        margin-top: -40px;
+      .logo-overlay {
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
         background: white;
-        border: 2px solid #ddd;
         border-radius: 50%;
+        padding: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .logo-overlay img {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .btn-custom {
+        background-color: #007bff;
+        color: white;
+        border-radius: 20px;
+        padding: 5px 15px;
+        transition: background-color 0.2s ease;
+      }
+      .btn-custom:hover {
+        background-color: #0056b3;
       }
     </style>
   </head>
@@ -79,19 +108,24 @@
 
             card.innerHTML = `
               <div class="card shadow-sm">
-                <div class="logo-container">
+                <div class="card-img-container">
                   <img
-                    src="${data.logoURL || 'https://via.placeholder.com/80'}"
-                    alt="Logo de ${data.name || 'Expositor'}"
-                    class="img-thumbnail"
+                    src="${data.imageURL || 'https://via.placeholder.com/300x200'}"
+                    class="card-img-top"
+                    alt="${data.name || 'Expositor'}"
                   />
+                  ${
+                    data.logoURL
+                      ? `<div class="logo-overlay">
+                          <img
+                            src="${data.logoURL}"
+                            alt="Logo de ${data.name || 'Expositor'}"
+                          />
+                        </div>`
+                      : ''
+                  }
                 </div>
-                <img
-                  src="${data.imageURL || 'https://via.placeholder.com/300x200'}"
-                  class="card-img-top"
-                  alt="${data.name || 'Expositor'}"
-                />
-                <div class="card-body">
+                <div class="card-body text-center">
                   <h5 class="card-title">${data.name || 'Sem Nome'}</h5>
                   <p class="card-text">
                     ${data.description || 'Sem descrição disponível.'}
@@ -99,7 +133,7 @@
                   <span class="badge bg-secondary">${data.category || 'Sem categoria'}</span>
                 </div>
                 <div class="card-footer text-center">
-                  <a href="exp/?ex=${uid}" class="btn btn-primary btn-sm">Ver Mais</a>
+                  <a href="exp/?ex=${uid}" class="btn btn-custom">Ver Mais</a>
                 </div>
               </div>
             `;
