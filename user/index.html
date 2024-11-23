@@ -10,7 +10,7 @@
       rel="stylesheet"
     />
     <style>
-      /* Estilos personalizados para as imagens de prévia */
+      /* Estilos profissionais para as imagens de prévia */
       .img-preview {
         max-width: 100%;
         max-height: 250px;
@@ -21,7 +21,7 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
 
-      /* Spinner centralizado no meio da página */
+      /* Spinner de carregamento centralizado */
       .spinner-container {
         position: fixed;
         top: 0;
@@ -50,14 +50,51 @@
         font-size: 1.2rem;
       }
 
-      /* Melhorando o layout do formulário */
+      /* Estilo do formulário */
       .form-group {
         position: relative;
       }
 
-      /* Deixando o formulário mais espaçado */
-      .form-control, .form-label {
+      .form-control,
+      .form-label {
         font-size: 1rem;
+      }
+
+      /* Estilo de links */
+      .link-preview {
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+        margin-top: 10px;
+      }
+
+      .link-preview a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+        margin-left: 8px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .link-preview a:hover {
+        text-decoration: underline;
+      }
+
+      .link-preview .icon {
+        width: 24px;
+        height: 24px;
+        background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Font_Awesome_5_brands_linkedin.svg/1024px-Font_Awesome_5_brands_linkedin.svg.png')
+          no-repeat center center;
+        background-size: contain;
+      }
+
+      /* Responsividade para dispositivos móveis */
+      @media (max-width: 576px) {
+        .link-preview a {
+          font-size: 0.9rem;
+        }
       }
     </style>
   </head>
@@ -134,6 +171,21 @@
           </div>
         </div>
 
+        <!-- Link -->
+        <div class="mb-3">
+          <label for="link" class="form-label">Link do Produto</label>
+          <input
+            type="url"
+            class="form-control"
+            id="link"
+            placeholder="Digite o link"
+            />
+          <div id="linkPreview" class="link-preview" style="display: none">
+            <div class="icon"></div>
+            <a href="#" target="_blank" id="linkText">Carregando link...</a>
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-primary w-100">Salvar</button>
         <button
           id="deleteButton"
@@ -200,65 +252,95 @@
             document.getElementById('name').value = data.name || '';
             document.getElementById('description').value = data.description || '';
             document.getElementById('category').value = data.category || '';
+            document.getElementById('link').value = data.link || '';
+            
+            if (data.link) {
+              document.getElementById('linkPreview').style.display = 'flex';
+              document.getElementById('linkText').href = data.link;
+              document.getElementById('linkText').textContent = data.link;
+            }
           } else {
             statusDiv.innerHTML =
-              '<div class="alert alert-warning">Expositor não encontrado.</div>';
+              '<div class="alert alert-danger">Erro: Expositor não encontrado.</div>';
           }
         } catch (error) {
           console.error('Erro ao carregar expositor:', error);
           statusDiv.innerHTML =
-            '<div class="alert alert-danger">Erro ao carregar dados.</div>';
+            '<div class="alert alert-danger">Erro ao carregar expositor.</div>';
         }
       }
 
       // Salvar expositor
-      async function saveExpositor(uid, name, description, category, logoFile, imageFile) {
-        showLoading(true); // Exibe o carregando
+      async function saveExpositor(uid, name, description, category, logoFile, imageFile, link) {
+        showLoading(true);
         try {
-          const updates = { name, description, category, updatedAt: new Date() };
+          // Atualizar os dados do expositor no Firestore
+          const docRef = doc(db, 'users', uid);
+          await setDoc(docRef, {
+            name,
+            description,
+            category,
+            link,
+          });
 
+          // Salvar as imagens no Firebase Storage
           if (logoFile) {
-            const logoRef = ref(storage, `users/${uid}/logo.jpg`);
-            const logoSnapshot = await uploadBytes(logoRef, logoFile);
-            updates.logoURL = await getDownloadURL(logoSnapshot.ref);
-          }
-          if (imageFile) {
-            const imageRef = ref(storage, `users/${uid}/image.jpg`);
-            const imageSnapshot = await uploadBytes(imageRef, imageFile);
-            updates.imageURL = await getDownloadURL(imageSnapshot.ref);
+            const logoRef = ref(storage, `logos/${uid}`);
+            await uploadBytes(logoRef, logoFile);
+            const logoURL = await getDownloadURL(logoRef);
+            await setDoc(docRef, { logoURL }, { merge: true });
           }
 
-          await setDoc(doc(db, 'users', uid), updates, { merge: true });
+          if (imageFile) {
+            const imageRef = ref(storage, `images/${uid}`);
+            await uploadBytes(imageRef, imageFile);
+            const imageURL = await getDownloadURL(imageRef);
+            await setDoc(docRef, { imageURL }, { merge: true });
+          }
+
           statusDiv.innerHTML =
-            '<div class="alert alert-success">Dados salvos com sucesso!</div>';
+            '<div class="alert alert-success">Expositor salvo com sucesso!</div>';
         } catch (error) {
           console.error('Erro ao salvar expositor:', error);
           statusDiv.innerHTML =
-            '<div class="alert alert-danger">Erro ao salvar dados.</div>';
+            '<div class="alert alert-danger">Erro ao salvar expositor.</div>';
         } finally {
-          showLoading(false); // Oculta o carregando
+          showLoading(false);
         }
       }
 
       // Deletar expositor
       async function deleteExpositor(uid) {
-        showLoading(true); // Exibe o carregando
+        showLoading(true);
         try {
-          await deleteDoc(doc(db, 'users', uid));
+          const docRef = doc(db, 'users', uid);
+          const docSnap = await getDoc(docRef);
 
-          const logoRef = ref(storage, `users/${uid}/logo.jpg`);
-          const imageRef = ref(storage, `users/${uid}/image.jpg`);
-          await deleteObject(logoRef).catch(() => {});
-          await deleteObject(imageRef).catch(() => {});
-
-          statusDiv.innerHTML =
-            '<div class="alert alert-danger">Expositor deletado com sucesso.</div>';
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            // Excluir imagens
+            if (data.logoURL) {
+              const logoRef = ref(storage, data.logoURL);
+              await deleteObject(logoRef);
+            }
+            if (data.imageURL) {
+              const imageRef = ref(storage, data.imageURL);
+              await deleteObject(imageRef);
+            }
+            // Excluir Firestore
+            await deleteDoc(docRef);
+            statusDiv.innerHTML =
+              '<div class="alert alert-success">Expositor deletado com sucesso.</div>';
+          } else {
+            statusDiv.innerHTML =
+              '<div class="alert alert-danger">Erro: Expositor não encontrado.</div>';
+          }
         } catch (error) {
           console.error('Erro ao deletar expositor:', error);
           statusDiv.innerHTML =
             '<div class="alert alert-danger">Erro ao deletar expositor.</div>';
         } finally {
-          showLoading(false); // Oculta o carregando
+          showLoading(false);
         }
       }
 
@@ -290,12 +372,24 @@
         loadExpositor();
         const logoInput = document.getElementById('logo');
         const imageInput = document.getElementById('image');
+        const linkInput = document.getElementById('link');
 
         logoInput.addEventListener('change', () => {
           showPreview(logoInput, 'logoPreview', 'logoSpinner');
         });
         imageInput.addEventListener('change', () => {
           showPreview(imageInput, 'imagePreview', 'imageSpinner');
+        });
+
+        linkInput.addEventListener('input', () => {
+          const link = linkInput.value;
+          if (link) {
+            document.getElementById('linkPreview').style.display = 'flex';
+            document.getElementById('linkText').href = link;
+            document.getElementById('linkText').textContent = link;
+          } else {
+            document.getElementById('linkPreview').style.display = 'none';
+          }
         });
 
         // Botão de salvar
@@ -306,8 +400,9 @@
           const category = document.getElementById('category').value;
           const logoFile = logoInput.files[0];
           const imageFile = imageInput.files[0];
+          const link = linkInput.value;
 
-          saveExpositor(uid, name, description, category, logoFile, imageFile);
+          saveExpositor(uid, name, description, category, logoFile, imageFile, link);
         });
 
         // Botão de deletar
