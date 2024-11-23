@@ -12,10 +12,10 @@
     <style>
       /* Estilo dos cards */
       .card {
-        border: none;
+        border: 1px solid #dcdcdc;
         border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
       .card:hover {
@@ -28,6 +28,7 @@
         position: relative;
         height: 200px;
         overflow: hidden;
+        border-bottom: 1px solid #dcdcdc;
       }
       .card-img-top {
         width: 100%;
@@ -38,29 +39,29 @@
       /* Logo do expositor */
       .logo-overlay {
         position: absolute;
-        bottom: 15px;
+        bottom: -70px; /* Metade do tamanho do logo */
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(255, 255, 255, 0.9);
+        background: #ffffff;
+        border: 2px solid #dcdcdc;
         border-radius: 50%;
-        border: 2px solid #007bff;
-        width: 70px;
-        height: 70px;
+        width: 140px;
+        height: 140px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       }
       .logo-overlay img {
-        width: 60px;
-        height: 60px;
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
         object-fit: cover;
       }
 
       /* Corpo do card */
       .card-body {
-        padding-top: 30px; /* Espaço para o logo */
+        padding-top: 90px; /* Espaço para o logo sobreposto */
       }
       .card-title {
         font-size: 1.2rem;
