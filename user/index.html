@@ -105,14 +105,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-storage.js"></script>
     <script>
-      // Configuração do Firebase
+      // Configuração do Firebase com suas credenciais
       const firebaseConfig = {
-        apiKey: 'YOUR_API_KEY',
-        authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-        projectId: 'YOUR_PROJECT_ID',
-        storageBucket: 'YOUR_PROJECT_ID.appspot.com',
-        messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-        appId: 'YOUR_APP_ID',
+        apiKey: 'YOUR_API_KEY',  // Substitua por sua chave API
+        authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',  // Substitua pelo seu ID do projeto
+        projectId: 'YOUR_PROJECT_ID',  // Substitua pelo seu ID do projeto
+        storageBucket: 'YOUR_PROJECT_ID.appspot.com',  // Substitua pelo seu bucket do Firebase
+        messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',  // Substitua pelo seu ID de remetente
+        appId: 'YOUR_APP_ID',  // Substitua pelo seu ID de app
       };
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
@@ -125,22 +125,24 @@
 
         if (expositorDoc.exists()) {
           const expositorData = expositorDoc.data();
-          const logoURL = expositorData.logoURL;
-          const imageURL = expositorData.imageURL;
 
-          // Mostrar prévia das imagens
-          if (logoURL) {
-            const logoImg = document.createElement('img');
-            logoImg.src = logoURL;
-            logoImg.classList.add('preview-img');
-            document.getElementById('imagePreviewsContainer').appendChild(logoImg);
+          // Preencher os campos do formulário
+          document.getElementById('name').value = expositorData.name || '';
+          document.getElementById('description').value = expositorData.description || '';
+          document.getElementById('category').value = expositorData.category || '';
+
+          // Carregar prévia da logo
+          if (expositorData.logoURL) {
+            const logoPreview = document.getElementById('logoPreview');
+            logoPreview.style.display = 'block';
+            logoPreview.src = expositorData.logoURL;
           }
 
-          if (imageURL) {
-            const imageImg = document.createElement('img');
-            imageImg.src = imageURL;
-            imageImg.classList.add('preview-img');
-            document.getElementById('imagePreviewsContainer').appendChild(imageImg);
+          // Carregar prévia da imagem
+          if (expositorData.imageURL) {
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.style.display = 'block';
+            imagePreview.src = expositorData.imageURL;
           }
         } else {
           console.error('Expositor não encontrado');
@@ -160,18 +162,20 @@
           });
 
           // Salvar logo no Firebase Storage
+          let logoURL = '';
           if (logoFile) {
             const logoRef = ref(storage, `logos/${uid}`);
             await uploadBytes(logoRef, logoFile);
-            const logoURL = await getDownloadURL(logoRef);
+            logoURL = await getDownloadURL(logoRef);
             await setDoc(docRef, { logoURL }, { merge: true });
           }
 
           // Salvar imagem no Firebase Storage
+          let imageURL = '';
           if (imageFile) {
             const imageRef = ref(storage, `images/${uid}`);
             await uploadBytes(imageRef, imageFile);
-            const imageURL = await getDownloadURL(imageRef);
+            imageURL = await getDownloadURL(imageRef);
             await setDoc(docRef, { imageURL }, { merge: true });
           }
 
