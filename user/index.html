@@ -10,7 +10,6 @@
       rel="stylesheet"
     />
   </head>
-
   <body>
     <div class="container mt-5">
       <h2 class="text-center">Cadastro de Expositor</h2>
@@ -81,169 +80,151 @@
 
     <!-- Firebase Scripts -->
     <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
       import {
         getFirestore,
         doc,
         getDoc,
         setDoc,
-        deleteDoc
-      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
+        deleteDoc,
+      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
       import {
         getStorage,
         ref,
         uploadBytes,
         getDownloadURL,
-        deleteObject
-      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js'
+        deleteObject,
+      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js';
 
       // Configuração Firebase
       const firebaseConfig = {
-        apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
-        authDomain: 'feira-265d4.firebaseapp.com',
-        projectId: 'feira-265d4',
-        storageBucket: 'feira-265d4.appspot.com',
-        messagingSenderId: '124883888377',
-        appId: '1:124883888377:web:63262744266bf5186a5a28',
-        measurementId: 'G-P5BDCBNMHE'
-      }
-      const app = initializeApp(firebaseConfig)
-      const db = getFirestore(app)
-      const storage = getStorage(app)
+        apiKey: 'SUA_API_KEY',
+        authDomain: 'SEU_AUTH_DOMAIN',
+        projectId: 'SEU_PROJECT_ID',
+        storageBucket: 'SEU_STORAGE_BUCKET',
+        messagingSenderId: 'SEU_MESSAGING_SENDER_ID',
+        appId: 'SEU_APP_ID',
+      };
 
-      const params = new URLSearchParams(window.location.search)
-      const uid = params.get('u')
-      const statusDiv = document.getElementById('status')
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const storage = getStorage(app);
+
+      const params = new URLSearchParams(window.location.search);
+      const uid = params.get('u');
+      const statusDiv = document.getElementById('status');
+
       if (!uid) {
-        statusDiv.innerText = 'Erro: UID não encontrado na URL.'
-        throw new Error('UID não encontrado na URL.')
+        statusDiv.innerHTML =
+          '<div class="alert alert-danger">Erro: UID não encontrado na URL.</div>';
+        throw new Error('UID não encontrado na URL.');
       }
 
-      // Função para carregar dados do expositor
+      // Carregar expositor
       async function loadExpositor() {
         try {
-          const docRef = doc(db, 'users', uid)
-          const docSnap = await getDoc(docRef)
+          const docRef = doc(db, 'users', uid);
+          const docSnap = await getDoc(docRef);
+
           if (docSnap.exists()) {
-            const data = docSnap.data()
-            document.getElementById('name').value = data.name || ''
-            document.getElementById('description').value =
-              data.description || ''
-            document.getElementById('category').value = data.category || ''
+            const data = docSnap.data();
+            document.getElementById('name').value = data.name || '';
+            document.getElementById('description').value = data.description || '';
+            document.getElementById('category').value = data.category || '';
           } else {
-            statusDiv.innerHTML = `<div class="alert alert-warning">Expositor não encontrado.</div>`
+            statusDiv.innerHTML =
+              '<div class="alert alert-warning">Expositor não encontrado.</div>';
           }
         } catch (error) {
-          console.error('Erro ao carregar expositor:', error)
-          statusDiv.innerHTML = `<div class="alert alert-danger">Erro ao carregar dados.</div>`
+          console.error('Erro ao carregar expositor:', error);
+          statusDiv.innerHTML =
+            '<div class="alert alert-danger">Erro ao carregar dados.</div>';
         }
       }
 
-      // Função para salvar (criar/editar) expositor
-      async function saveExpositor(
-        uid,
-        name,
-        description,
-        category,
-        logoFile,
-        imageFile
-      ) {
+      // Salvar expositor
+      async function saveExpositor(uid, name, description, category, logoFile, imageFile) {
         try {
-          const updates = { name, description, category, updatedAt: new Date() }
+          const updates = { name, description, category, updatedAt: new Date() };
 
-          // Upload de arquivos (se fornecidos)
           if (logoFile) {
-            const logoRef = ref(storage, `users/${uid}/logo.jpg`)
-            const logoSnapshot = await uploadBytes(logoRef, logoFile)
-            updates.logoURL = await getDownloadURL(logoSnapshot.ref)
+            const logoRef = ref(storage, `users/${uid}/logo.jpg`);
+            const logoSnapshot = await uploadBytes(logoRef, logoFile);
+            updates.logoURL = await getDownloadURL(logoSnapshot.ref);
           }
           if (imageFile) {
-            const imageRef = ref(storage, `users/${uid}/image.jpg`)
-            const imageSnapshot = await uploadBytes(imageRef, imageFile)
-            updates.imageURL = await getDownloadURL(imageSnapshot.ref)
+            const imageRef = ref(storage, `users/${uid}/image.jpg`);
+            const imageSnapshot = await uploadBytes(imageRef, imageFile);
+            updates.imageURL = await getDownloadURL(imageSnapshot.ref);
           }
 
-          await setDoc(doc(db, 'users', uid), updates, { merge: true })
-          statusDiv.innerHTML = `<div class="alert alert-success">Dados salvos com sucesso!</div>`
+          await setDoc(doc(db, 'users', uid), updates, { merge: true });
+          statusDiv.innerHTML =
+            '<div class="alert alert-success">Dados salvos com sucesso!</div>';
         } catch (error) {
-          console.error('Erro ao salvar expositor:', error)
-          statusDiv.innerHTML = `<div class="alert alert-danger">Erro ao salvar dados.</div>`
+          console.error('Erro ao salvar expositor:', error);
+          statusDiv.innerHTML =
+            '<div class="alert alert-danger">Erro ao salvar dados.</div>';
         }
       }
 
-      // Função para deletar expositor
+      // Deletar expositor
       async function deleteExpositor(uid) {
         try {
-          await deleteDoc(doc(db, 'users', uid))
+          await deleteDoc(doc(db, 'users', uid));
 
-          // Remover arquivos do Storage
-          const logoRef = ref(storage, `users/${uid}/logo.jpg`)
-          const imageRef = ref(storage, `users/${uid}/image.jpg`)
-          await deleteObject(logoRef).catch(() => {})
-          await deleteObject(imageRef).catch(() => {})
+          const logoRef = ref(storage, `users/${uid}/logo.jpg`);
+          const imageRef = ref(storage, `users/${uid}/image.jpg`);
+          await deleteObject(logoRef).catch(() => {});
+          await deleteObject(imageRef).catch(() => {});
 
-          statusDiv.innerHTML = `<div class="alert alert-success">Expositor deletado com sucesso!</div>`
+          statusDiv.innerHTML =
+            '<div class="alert alert-success">Expositor deletado com sucesso!</div>';
         } catch (error) {
-          console.error('Erro ao deletar expositor:', error)
-          statusDiv.innerHTML = `<div class="alert alert-danger">Erro ao deletar dados.</div>`
+          console.error('Erro ao deletar expositor:', error);
+          statusDiv.innerHTML =
+            '<div class="alert alert-danger">Erro ao deletar dados.</div>';
         }
       }
 
-      // Manipulador de envio do formulário
-      document
-        .getElementById('expositorForm')
-        .addEventListener('submit', async event => {
-          event.preventDefault()
-          const name = document.getElementById('name').value
-          const description = document.getElementById('description').value
-          const category = document.getElementById('category').value
-          const logoFile = document.getElementById('logo').files[0]
-          const imageFile = document.getElementById('image').files[0]
-          await saveExpositor(
-            uid,
-            name,
-            description,
-            category,
-            logoFile,
-            imageFile
-          )
-        })
-
-      // Manipulador do botão de deletar
-      document
-        .getElementById('deleteButton')
-        .addEventListener('click', async () => {
-          if (confirm('Tem certeza que deseja deletar este expositor?')) {
-            await deleteExpositor(uid)
-          }
-        })
-
-      // Carregar dados ao abrir a página
-      loadExpositor()
-
-      // Função para mostrar prévia da imagem
+      // Prévia de imagem
       function showPreview(input, previewId) {
-        const file = input.files[0]
-        const preview = document.getElementById(previewId)
+        const file = input.files[0];
+        const preview = document.getElementById(previewId);
         if (file) {
-          const objectURL = URL.createObjectURL(file)
-          preview.src = objectURL
-          preview.style.display = 'block'
+          const objectURL = URL.createObjectURL(file);
+          preview.src = objectURL;
+          preview.style.display = 'block';
         } else {
-          preview.src = '#'
-          preview.style.display = 'none'
+          preview.style.display = 'none';
         }
       }
 
-      // Evento para prévia do logotipo
-      document.getElementById('logo').addEventListener('change', event => {
-        showPreview(event.target, 'logoPreview')
-      })
+      document.getElementById('logo').addEventListener('change', (e) => {
+        showPreview(e.target, 'logoPreview');
+      });
 
-      // Evento para prévia da imagem
-      document.getElementById('image').addEventListener('change', event => {
-        showPreview(event.target, 'imagePreview')
-      })
+      document.getElementById('image').addEventListener('change', (e) => {
+        showPreview(e.target, 'imagePreview');
+      });
+
+      document.getElementById('expositorForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const description = document.getElementById('description').value;
+        const category = document.getElementById('category').value;
+        const logoFile = document.getElementById('logo').files[0];
+        const imageFile = document.getElementById('image').files[0];
+        await saveExpositor(uid, name, description, category, logoFile, imageFile);
+      });
+
+      document.getElementById('deleteButton').addEventListener('click', async () => {
+        if (confirm('Tem certeza que deseja deletar este expositor?')) {
+          await deleteExpositor(uid);
+        }
+      });
+
+      loadExpositor();
     </script>
 
     <!-- Bootstrap JS -->
