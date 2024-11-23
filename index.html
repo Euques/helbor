@@ -40,7 +40,7 @@
       /* Logo do expositor */
       .logo-overlay {
         position: absolute;
-        bottom: 115px; /* Logo agora está 100px mais abaixo */
+        bottom: 70px; /* Posição 70px acima do botão */
         left: 50%;
         transform: translateX(-50%);
         background: #ffffff;
@@ -52,7 +52,7 @@
         align-items: center;
         justify-content: center;
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-        z-index: 10;
+        z-index: 99; /* Assegura que o logo ficará sobre outros elementos */
       }
       .logo-overlay img {
         width: 100px;
@@ -65,6 +65,7 @@
       .card-body {
         padding-top: 50px; /* Espaço para o logo */
         text-align: center;
+        position: relative;
       }
       .card-title {
         font-size: 1.2rem;
