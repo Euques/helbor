@@ -39,11 +39,11 @@
       /* Logo do expositor */
       .logo-overlay {
         position: absolute;
-        top: 100%;
+        bottom: -70px; /* Coloca o logo sobre a divisão entre a imagem e o corpo */
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
         background: #ffffff;
-        border: 2px solid #dcdcdc;
+        border: 3px solid #dcdcdc;
         border-radius: 50%;
         width: 140px;
         height: 140px;
@@ -62,8 +62,7 @@
 
       /* Corpo do card */
       .card-body {
-        position: relative;
-        padding-top: 70px; /* Ajustado para evitar sobreposição com o logo */
+        padding-top: 70px; /* Espaço para o logo */
         text-align: center;
       }
       .card-title {
