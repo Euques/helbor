@@ -11,15 +11,24 @@
     <style>
       body {
         background-color: #f8f9fa;
+        padding: 20px;
       }
-      .container {
-        max-width: 600px;
+      label {
+        font-weight: bold;
+      }
+      .discreet-button {
+        background: none;
+        border: none;
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
       }
       .preview-container img {
-        max-height: 150px;
+        max-height: 120px;
         display: block;
-        margin: 0 auto;
-        border-radius: 8px;
+        margin-top: 10px;
+        border-radius: 6px;
       }
       .loading {
         display: none;
@@ -28,71 +37,79 @@
     </style>
   </head>
   <body>
-    <div class="container mt-5 shadow-lg p-4 bg-white rounded">
-      <h2 class="text-center mb-4 text-primary">Cadastro de Expositor</h2>
-      <form id="expositorForm" class="needs-validation" novalidate>
-        <div class="mb-3">
-          <label for="name" class="form-label">Nome</label>
-          <input
-            type="text"
-            class="form-control"
-            id="name"
-            placeholder="Digite o nome"
-            required
-          />
-          <div class="invalid-feedback">Por favor, insira o nome.</div>
+    <h2 class="text-center mb-4 text-primary">Cadastro de Expositor</h2>
+    <form id="expositorForm" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="name" class="form-label">Nome</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          placeholder="Digite o nome"
+          required
+        />
+        <div class="invalid-feedback">Por favor, insira o nome.</div>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Descrição</label>
+        <textarea
+          class="form-control"
+          id="description"
+          rows="3"
+          placeholder="Digite a descrição"
+          required
+        ></textarea>
+        <div class="invalid-feedback">Por favor, insira uma descrição.</div>
+      </div>
+      <div class="mb-3">
+        <label for="category" class="form-label">Categoria</label>
+        <input
+          type="text"
+          class="form-control"
+          id="category"
+          placeholder="Digite a categoria"
+          required
+        />
+        <div class="invalid-feedback">Por favor, insira a categoria.</div>
+      </div>
+      <div class="mb-3">
+        <label for="logo" class="form-label">Logotipo</label>
+        <input
+          type="file"
+          class="form-control discreet-button"
+          id="logo"
+          accept="image/*"
+        />
+        <div class="preview-container">
+          <img id="logoPreview" alt="Prévia do logotipo" style="display: none;" />
         </div>
-        <div class="mb-3">
-          <label for="description" class="form-label">Descrição</label>
-          <textarea
-            class="form-control"
-            id="description"
-            rows="3"
-            placeholder="Digite a descrição"
-            required
-          ></textarea>
-          <div class="invalid-feedback">Por favor, insira uma descrição.</div>
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">Imagem</label>
+        <input
+          type="file"
+          class="form-control discreet-button"
+          id="image"
+          accept="image/*"
+        />
+        <div class="preview-container">
+          <img id="imagePreview" alt="Prévia da imagem" style="display: none;" />
         </div>
-        <div class="mb-3">
-          <label for="category" class="form-label">Categoria</label>
-          <input
-            type="text"
-            class="form-control"
-            id="category"
-            placeholder="Digite a categoria"
-            required
-          />
-          <div class="invalid-feedback">Por favor, insira a categoria.</div>
-        </div>
-        <div class="mb-3">
-          <label for="logo" class="form-label">Logotipo</label>
-          <input type="file" class="form-control" id="logo" accept="image/*" />
-          <div class="preview-container mt-2">
-            <img id="logoPreview" alt="Prévia do logotipo" style="display: none;" />
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="image" class="form-label">Imagem</label>
-          <input type="file" class="form-control" id="image" accept="image/*" />
-          <div class="preview-container mt-2">
-            <img id="imagePreview" alt="Prévia da imagem" style="display: none;" />
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Salvar</button>
-        <button
-          id="deleteButton"
-          type="button"
-          class="btn btn-danger w-100 mt-2"
-        >
-          Deletar
-        </button>
-        <div class="loading text-center">
-          <div class="spinner-border text-primary" role="status"></div>
-          <p class="mt-2">Processando...</p>
-        </div>
-      </form>
-      <div id="status" class="mt-3"></div>
-    </div>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Salvar</button>
+      <button
+        id="deleteButton"
+        type="button"
+        class="btn discreet-button mt-2"
+      >
+        Deletar perfil
+      </button>
+      <div class="loading text-center">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Processando...</p>
+      </div>
+    </form>
+    <div id="status" class="mt-3"></div>
 
     <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
@@ -160,27 +177,26 @@
         }
       }
 
-      async function saveExpositor(name, description, category, logoFile, imageFile) {
+      async function deleteExpositor() {
+        const confirmDelete = confirm(
+          'Tem certeza de que deseja excluir o perfil? Esta ação não pode ser desfeita.'
+        )
+        if (!confirmDelete) return
+
+        loadingIndicator.style.display = 'block'
         try {
-          loadingIndicator.style.display = 'block'
-          const updates = { name, description, category, updatedAt: new Date() }
-          if (logoFile) {
-            const logoRef = ref(storage, `users/${uid}/logo.jpg`)
-            const logoSnapshot = await uploadBytes(logoRef, logoFile)
-            updates.logoURL = await getDownloadURL(logoSnapshot.ref)
-          }
-          if (imageFile) {
-            const imageRef = ref(storage, `users/${uid}/image.jpg`)
-            const imageSnapshot = await uploadBytes(imageRef, imageFile)
-            updates.imageURL = await getDownloadURL(imageSnapshot.ref)
-          }
-          await setDoc(doc(db, 'users', uid), updates, { merge: true })
+          await deleteDoc(doc(db, 'users', uid))
           statusDiv.innerHTML =
-            '<div class="alert alert-success">Dados salvos com sucesso!</div>'
+            '<div class="alert alert-success">Perfil deletado com sucesso!</div>'
+        } catch (error) {
+          statusDiv.innerHTML =
+            '<div class="alert alert-danger">Erro ao deletar perfil.</div>'
         } finally {
           loadingIndicator.style.display = 'none'
         }
       }
+
+      document.getElementById('deleteButton').addEventListener('click', deleteExpositor)
 
       loadExpositor()
     </script>
