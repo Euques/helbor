@@ -4,120 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cadastro de Expositores</title>
-    <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <style>
-      /* Estilos profissionais para as imagens de prévia */
-      .img-preview {
-        max-width: 100%;
-        max-height: 250px;
-        object-fit: contain;
-        display: block;
-        margin: 20px auto;
+      .preview-img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
         border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
-
-      /* Spinner de carregamento centralizado */
-      .spinner-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.3);
+      .spinner {
         display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-      }
-      .spinner-container .spinner-border {
-        color: #007bff;
-      }
-
-      /* Área de mensagens de status */
-      #status {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 10;
-        text-align: center;
-        padding: 10px;
-        font-size: 1.2rem;
-      }
-
-      /* Estilo do formulário */
-      .form-group {
-        position: relative;
-      }
-
-      .form-control,
-      .form-label {
-        font-size: 1rem;
-      }
-
-      /* Estilo de links */
-      .link-preview {
-        display: flex;
-        align-items: center;
-        font-size: 1rem;
-        margin-top: 10px;
-      }
-
-      .link-preview a {
-        color: #007bff;
-        text-decoration: none;
-        font-weight: bold;
-        margin-left: 8px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-
-      .link-preview a:hover {
-        text-decoration: underline;
-      }
-
-      .link-preview .icon {
         width: 24px;
         height: 24px;
-        background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Font_Awesome_5_brands_linkedin.svg/1024px-Font_Awesome_5_brands_linkedin.svg.png')
-          no-repeat center center;
-        background-size: contain;
+        border: 4px solid rgba(0, 0, 0, 0.3);
+        border-top: 4px solid #000;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
       }
 
-      /* Responsividade para dispositivos móveis */
-      @media (max-width: 576px) {
-        .link-preview a {
-          font-size: 0.9rem;
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
         }
       }
     </style>
   </head>
   <body>
-    <!-- Carregando Spinner -->
-    <div class="spinner-container" id="loadingSpinner">
-      <div class="spinner-border" role="status"></div>
-    </div>
-
-    <!-- Status de mensagens -->
-    <div id="status"></div>
-
-    <div class="container mt-5">
-      <h2 class="text-center">Cadastro de Expositor</h2>
-      <form id="expositorForm" class="mt-4">
+    <div class="container">
+      <h1 class="my-4">Cadastro de Expositores</h1>
+      <form id="expositorForm">
         <div class="mb-3">
-          <label for="name" class="form-label">Nome</label>
+          <label for="name" class="form-label">Nome do Expositor</label>
           <input
             type="text"
             class="form-control"
             id="name"
-            placeholder="Digite o nome"
-            required
+            placeholder="Nome do Expositor"
           />
         </div>
         <div class="mb-3">
@@ -126,8 +54,7 @@
             class="form-control"
             id="description"
             rows="3"
-            placeholder="Digite a descrição"
-            required
+            placeholder="Descrição do Expositor"
           ></textarea>
         </div>
         <div class="mb-3">
@@ -136,142 +63,92 @@
             type="text"
             class="form-control"
             id="category"
-            placeholder="Digite a categoria"
-            required
+            placeholder="Categoria"
           />
         </div>
-
-        <!-- Logotipo -->
         <div class="mb-3">
-          <label for="logo" class="form-label">Logotipo</label>
-          <input type="file" class="form-control" id="logo" accept="image/*" />
-          <div class="mt-2">
-            <img
-              id="logoPreview"
-              class="img-preview"
-              src="#"
-              alt="Prévia do logotipo"
-              style="display: none"
-            />
-          </div>
-        </div>
-
-        <!-- Imagem do Produto -->
-        <div class="mb-3">
-          <label for="image" class="form-label">Imagem do Produto</label>
-          <input type="file" class="form-control" id="image" accept="image/*" />
-          <div class="mt-2">
-            <img
-              id="imagePreview"
-              class="img-preview"
-              src="#"
-              alt="Prévia da imagem"
-              style="display: none"
-            />
-          </div>
-        </div>
-
-        <!-- Link -->
-        <div class="mb-3">
-          <label for="link" class="form-label">Link do Produto</label>
+          <label for="logo" class="form-label">Logo</label>
           <input
-            type="url"
+            type="file"
             class="form-control"
-            id="link"
-            placeholder="Digite o link"
-            />
-          <div id="linkPreview" class="link-preview" style="display: none">
-            <div class="icon"></div>
-            <a href="#" target="_blank" id="linkText">Carregando link...</a>
-          </div>
+            id="logo"
+            accept="image/*"
+          />
+          <div class="spinner" id="logoSpinner"></div>
+          <img id="logoPreview" class="preview-img" style="display: none" />
         </div>
-
-        <button type="submit" class="btn btn-primary w-100">Salvar</button>
-        <button
-          id="deleteButton"
-          type="button"
-          class="btn btn-danger w-100 mt-2"
-        >
-          Deletar
-        </button>
+        <div class="mb-3">
+          <label for="image" class="form-label">Imagem</label>
+          <input
+            type="file"
+            class="form-control"
+            id="image"
+            accept="image/*"
+          />
+          <div class="spinner" id="imageSpinner"></div>
+          <img id="imagePreview" class="preview-img" style="display: none" />
+        </div>
+        <div id="statusDiv"></div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <button type="button" class="btn btn-danger" id="deleteButton">Deletar</button>
       </form>
+
+      <hr />
+
+      <h2>Pré-visualização das Imagens Armazenadas:</h2>
+      <div id="imagePreviewsContainer">
+        <!-- As prévias das imagens carregadas do Firebase Storage vão aparecer aqui -->
+      </div>
     </div>
 
-    <!-- Firebase Scripts -->
-    <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
-      import {
-        getFirestore,
-        doc,
-        getDoc,
-        setDoc,
-        deleteDoc,
-      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
-      import {
-        getStorage,
-        ref,
-        uploadBytes,
-        getDownloadURL,
-        deleteObject,
-      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js';
-
-      // Configuração Firebase
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-storage.js"></script>
+    <script>
+      // Configuração do Firebase
       const firebaseConfig = {
-        apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
-        authDomain: 'feira-265d4.firebaseapp.com',
-        databaseURL: 'https://feira-265d4-default-rtdb.firebaseio.com',
-        projectId: 'feira-265d4',
-        storageBucket: 'feira-265d4.firebasestorage.app',
-        messagingSenderId: '124883888377',
-        appId: '1:124883888377:web:c4e8c834b313127f6a5a28',
-        measurementId: 'G-2QFQD5NGXR'
+        apiKey: 'YOUR_API_KEY',
+        authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
+        projectId: 'YOUR_PROJECT_ID',
+        storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+        messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+        appId: 'YOUR_APP_ID',
       };
-
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
       const storage = getStorage(app);
 
-      const params = new URLSearchParams(window.location.search);
-      const uid = params.get('u');
-      const statusDiv = document.getElementById('status');
-
-      if (!uid) {
-        statusDiv.innerHTML =
-          '<div class="alert alert-danger">Erro: UID não encontrado na URL.</div>';
-        throw new Error('UID não encontrado na URL.');
-      }
-
-      // Carregar expositor
+      // Função para carregar expositor
       async function loadExpositor() {
-        try {
-          const docRef = doc(db, 'users', uid);
-          const docSnap = await getDoc(docRef);
+        const expositorId = 'EXPOSITOR_UID'; // Substitua pelo UID do expositor
+        const expositorDoc = await getDoc(doc(db, 'users', expositorId));
 
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('name').value = data.name || '';
-            document.getElementById('description').value = data.description || '';
-            document.getElementById('category').value = data.category || '';
-            document.getElementById('link').value = data.link || '';
-            
-            if (data.link) {
-              document.getElementById('linkPreview').style.display = 'flex';
-              document.getElementById('linkText').href = data.link;
-              document.getElementById('linkText').textContent = data.link;
-            }
-          } else {
-            statusDiv.innerHTML =
-              '<div class="alert alert-danger">Erro: Expositor não encontrado.</div>';
+        if (expositorDoc.exists()) {
+          const expositorData = expositorDoc.data();
+          const logoURL = expositorData.logoURL;
+          const imageURL = expositorData.imageURL;
+
+          // Mostrar prévia das imagens
+          if (logoURL) {
+            const logoImg = document.createElement('img');
+            logoImg.src = logoURL;
+            logoImg.classList.add('preview-img');
+            document.getElementById('imagePreviewsContainer').appendChild(logoImg);
           }
-        } catch (error) {
-          console.error('Erro ao carregar expositor:', error);
-          statusDiv.innerHTML =
-            '<div class="alert alert-danger">Erro ao carregar expositor.</div>';
+
+          if (imageURL) {
+            const imageImg = document.createElement('img');
+            imageImg.src = imageURL;
+            imageImg.classList.add('preview-img');
+            document.getElementById('imagePreviewsContainer').appendChild(imageImg);
+          }
+        } else {
+          console.error('Expositor não encontrado');
         }
       }
 
-      // Salvar expositor
-      async function saveExpositor(uid, name, description, category, logoFile, imageFile, link) {
+      // Função para salvar expositor
+      async function saveExpositor(uid, name, description, category, logoFile, imageFile) {
         showLoading(true);
         try {
           // Atualizar os dados do expositor no Firestore
@@ -280,10 +157,9 @@
             name,
             description,
             category,
-            link,
           });
 
-          // Salvar as imagens no Firebase Storage
+          // Salvar logo no Firebase Storage
           if (logoFile) {
             const logoRef = ref(storage, `logos/${uid}`);
             await uploadBytes(logoRef, logoFile);
@@ -291,6 +167,7 @@
             await setDoc(docRef, { logoURL }, { merge: true });
           }
 
+          // Salvar imagem no Firebase Storage
           if (imageFile) {
             const imageRef = ref(storage, `images/${uid}`);
             await uploadBytes(imageRef, imageFile);
@@ -298,18 +175,18 @@
             await setDoc(docRef, { imageURL }, { merge: true });
           }
 
-          statusDiv.innerHTML =
+          document.getElementById('statusDiv').innerHTML =
             '<div class="alert alert-success">Expositor salvo com sucesso!</div>';
         } catch (error) {
           console.error('Erro ao salvar expositor:', error);
-          statusDiv.innerHTML =
+          document.getElementById('statusDiv').innerHTML =
             '<div class="alert alert-danger">Erro ao salvar expositor.</div>';
         } finally {
           showLoading(false);
         }
       }
 
-      // Deletar expositor
+      // Função para deletar expositor
       async function deleteExpositor(uid) {
         showLoading(true);
         try {
@@ -318,7 +195,7 @@
 
           if (docSnap.exists()) {
             const data = docSnap.data();
-            // Excluir imagens
+            // Excluir imagens do Firebase Storage
             if (data.logoURL) {
               const logoRef = ref(storage, data.logoURL);
               await deleteObject(logoRef);
@@ -327,88 +204,32 @@
               const imageRef = ref(storage, data.imageURL);
               await deleteObject(imageRef);
             }
-            // Excluir Firestore
+
+            // Excluir dados do Firestore
             await deleteDoc(docRef);
-            statusDiv.innerHTML =
+            document.getElementById('statusDiv').innerHTML =
               '<div class="alert alert-success">Expositor deletado com sucesso.</div>';
           } else {
-            statusDiv.innerHTML =
+            document.getElementById('statusDiv').innerHTML =
               '<div class="alert alert-danger">Erro: Expositor não encontrado.</div>';
           }
         } catch (error) {
           console.error('Erro ao deletar expositor:', error);
-          statusDiv.innerHTML =
+          document.getElementById('statusDiv').innerHTML =
             '<div class="alert alert-danger">Erro ao deletar expositor.</div>';
         } finally {
           showLoading(false);
         }
       }
 
-      // Mostrar o carregando
+      // Função para mostrar o carregamento
       function showLoading(isLoading) {
         document.getElementById('loadingSpinner').style.display = isLoading ? 'flex' : 'none';
-      }
-
-      // Mostrar prévia da imagem
-      function showPreview(input, previewId, spinnerId) {
-        const file = input.files[0];
-        const preview = document.getElementById(previewId);
-        const spinner = document.getElementById(spinnerId);
-        if (file) {
-          preview.style.display = 'none';
-          spinner.style.display = 'block';
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            preview.style.display = 'block';
-            preview.src = e.target.result;
-            spinner.style.display = 'none'; // Oculta o carregando
-          };
-          reader.readAsDataURL(file);
-        }
       }
 
       // Inicializar a página
       document.addEventListener('DOMContentLoaded', () => {
         loadExpositor();
-        const logoInput = document.getElementById('logo');
-        const imageInput = document.getElementById('image');
-        const linkInput = document.getElementById('link');
-
-        logoInput.addEventListener('change', () => {
-          showPreview(logoInput, 'logoPreview', 'logoSpinner');
-        });
-        imageInput.addEventListener('change', () => {
-          showPreview(imageInput, 'imagePreview', 'imageSpinner');
-        });
-
-        linkInput.addEventListener('input', () => {
-          const link = linkInput.value;
-          if (link) {
-            document.getElementById('linkPreview').style.display = 'flex';
-            document.getElementById('linkText').href = link;
-            document.getElementById('linkText').textContent = link;
-          } else {
-            document.getElementById('linkPreview').style.display = 'none';
-          }
-        });
-
-        // Botão de salvar
-        document.getElementById('expositorForm').addEventListener('submit', (event) => {
-          event.preventDefault();
-          const name = document.getElementById('name').value;
-          const description = document.getElementById('description').value;
-          const category = document.getElementById('category').value;
-          const logoFile = logoInput.files[0];
-          const imageFile = imageInput.files[0];
-          const link = linkInput.value;
-
-          saveExpositor(uid, name, description, category, logoFile, imageFile, link);
-        });
-
-        // Botão de deletar
-        document.getElementById('deleteButton').addEventListener('click', () => {
-          deleteExpositor(uid);
-        });
       });
     </script>
 
