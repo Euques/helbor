@@ -28,6 +28,11 @@
         </div>
       </div>
 
+      <!-- Botão Novo Produto -->
+      <button id="newProductButton" class="btn btn-success w-100 mb-3">
+        Criar Novo Produto
+      </button>
+
       <!-- Select para editar produto -->
       <div class="mb-3">
         <label for="productSelect" class="form-label">Escolher Produto para Editar</label>
@@ -86,7 +91,7 @@
 
       <!-- Botão para Excluir Produto -->
       <button id="deleteProductButton" class="btn btn-danger w-100 mt-3" style="display: none;">
-        Excluir Produto
+        <i class="bi bi-trash"></i> Excluir Produto
       </button>
     </div>
 
@@ -294,6 +299,13 @@
       // Carregar expositor e produtos ao iniciar
       loadExpositor()
       loadProducts()
+
+      // Botão de Novo Produto
+      document.getElementById('newProductButton').addEventListener('click', () => {
+        // Limpar dados do formulário
+        document.getElementById('productForm').reset()
+        document.getElementById('deleteProductButton').style.display = 'none'
+      })
     </script>
 
     <!-- Bootstrap JS -->
