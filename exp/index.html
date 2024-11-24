@@ -3,52 +3,77 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Produtos Disponíveis</title>
+    <title>Produtos do Expositor</title>
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <style>
+      /* Customização de estilo */
       .product-card {
+        margin-bottom: 20px;
         border: 1px solid #ddd;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
         overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
-      .product-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-      }
+
       .product-card img {
-        height: 200px;
         object-fit: cover;
+        height: 200px;
         width: 100%;
       }
-      .product-details {
+
+      .product-card .card-body {
         padding: 15px;
       }
-      .product-price {
-        color: #28a745;
+
+      .product-card .card-title {
         font-size: 1.2rem;
         font-weight: bold;
       }
-      .product-title {
-        font-size: 1.25rem;
-        font-weight: bold;
-      }
-      .product-description {
-        font-size: 0.9rem;
+
+      .product-card .card-text {
+        font-size: 1rem;
         color: #555;
+        margin-top: 10px;
+      }
+
+      .product-card .product-price {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #2d6a4f;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .product-card {
+          margin-bottom: 15px;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container mt-5">
-      <h2 class="text-center mb-4">Produtos Disponíveis</h2>
-      <div id="productsContainer" class="row">
-        <!-- Produtos serão carregados aqui -->
+      <h2 class="text-center mb-4">Produtos do Expositor</h2>
+
+      <!-- Card do Expositor -->
+      <div id="expositorCard" class="card mb-4" style="max-width: 18rem;">
+        <img
+          id="expositorLogo"
+          class="card-img-top"
+          alt="Logo do Expositor"
+          style="height: 150px; object-fit: cover;"
+        />
+        <div class="card-body">
+          <h5 id="expositorName" class="card-title"></h5>
+          <p id="expositorDescription" class="card-text"></p>
+        </div>
+      </div>
+
+      <div id="productsContainer" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        <!-- Produtos serão inseridos aqui -->
       </div>
     </div>
 
@@ -57,13 +82,13 @@
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
       import {
         getFirestore,
-        collection,
-        query,
-        where,
-        getDocs
+        doc,
+        getDoc,
+        getDocs,
+        collection
       } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
 
-      // Configuração do Firebase
+      // Configuração Firebase
       const firebaseConfig = {
         apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
         authDomain: 'feira-265d4.firebaseapp.com',
@@ -78,57 +103,81 @@
       const app = initializeApp(firebaseConfig)
       const db = getFirestore(app)
 
-      // Função para recuperar o 'ex' da URL
-      function getExFromURL() {
-        const urlParams = new URLSearchParams(window.location.search)
-        return urlParams.get('ex')
+      const params = new URLSearchParams(window.location.search)
+      const uid = params.get('ex')
+      const statusDiv = document.getElementById('status')
+
+      if (!uid) {
+        statusDiv.innerHTML =
+          '<div class="alert alert-danger">Erro: UID não encontrado na URL.</div>'
+        throw new Error('UID não encontrado na URL.')
       }
 
-      // Carregar produtos do expositor específico
-      async function loadProducts() {
-        const ex = getExFromURL()
-        
-        if (!ex) {
-          document.getElementById('productsContainer').innerHTML =
-            '<div class="col-12"><p class="text-center text-danger">Parâmetro "ex" não encontrado na URL.</p></div>'
-          return
-        }
-
+      // Carregar expositor e exibir dados no card
+      async function loadExpositor() {
         try {
-          const productsRef = collection(db, 'products')
-          const q = query(productsRef, where('ex', '==', ex)) // Filtrar produtos pelo 'ex' do expositor
-          const querySnapshot = await getDocs(q)
-          const productsContainer = document.getElementById('productsContainer')
+          const docRef = doc(db, 'users', uid)
+          const docSnap = await getDoc(docRef)
 
-          if (querySnapshot.empty) {
-            productsContainer.innerHTML =
-              '<div class="col-12"><p class="text-center">Nenhum produto encontrado para este expositor.</p></div>'
+          if (docSnap.exists()) {
+            const data = docSnap.data()
+            document.getElementById('expositorName').textContent = data.name || ''
+            document.getElementById('expositorDescription').textContent =
+              data.description || ''
+
+            // Exibir logo do expositor
+            if (data.logoURL) {
+              const logoPreview = document.getElementById('expositorLogo')
+              logoPreview.src = data.logoURL
+            }
           } else {
-            querySnapshot.forEach((doc) => {
-              const data = doc.data()
-              const productCard = `
-                <div class="col-md-4 col-sm-6 mb-4">
-                  <div class="product-card">
-                    <img src="${data.imageURL || 'https://via.placeholder.com/400'}" alt="${data.name}">
-                    <div class="product-details">
-                      <h5 class="product-title">${data.name}</h5>
-                      <p class="product-description">${data.description}</p>
-                      <p class="product-price">R$ ${data.price.toFixed(2).replace('.', ',')}</p>
-                    </div>
-                  </div>
-                </div>
-              `
-              productsContainer.innerHTML += productCard
-            })
+            statusDiv.innerHTML =
+              '<div class="alert alert-warning">Expositor não encontrado.</div>'
           }
         } catch (error) {
-          console.error('Erro ao carregar produtos:', error)
-          document.getElementById('productsContainer').innerHTML =
-            '<div class="col-12"><p class="text-center text-danger">Erro ao carregar produtos.</p></div>'
+          console.error('Erro ao carregar expositor:', error)
+          statusDiv.innerHTML =
+            '<div class="alert alert-danger">Erro ao carregar dados do expositor.</div>'
         }
       }
 
-      // Carregar os produtos ao iniciar
+      // Carregar produtos do expositor e exibir em cards
+      async function loadProducts() {
+        try {
+          const querySnapshot = await getDocs(
+            collection(db, 'users', uid, 'products')
+          )
+          const productsContainer = document.getElementById('productsContainer')
+          productsContainer.innerHTML = '' // Limpar lista de produtos
+
+          querySnapshot.forEach((doc) => {
+            const data = doc.data()
+
+            const productCard = document.createElement('div')
+            productCard.classList.add('col')
+
+            productCard.innerHTML = `
+              <div class="card product-card">
+                <img src="${data.imageURL}" alt="${data.name}" class="card-img-top">
+                <div class="card-body">
+                  <h5 class="card-title">${data.name}</h5>
+                  <p class="card-text">${data.description}</p>
+                  <p class="product-price">${data.price}</p>
+                </div>
+              </div>
+            `
+
+            productsContainer.appendChild(productCard)
+          })
+        } catch (error) {
+          console.error('Erro ao carregar produtos:', error)
+          statusDiv.innerHTML =
+            '<div class="alert alert-danger">Erro ao carregar os produtos.</div>'
+        }
+      }
+
+      // Carregar expositor e produtos ao iniciar
+      loadExpositor()
       loadProducts()
     </script>
 
