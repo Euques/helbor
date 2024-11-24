@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastro de Produtos</title>
+    <title>Cadastro de Expositores e Produtos</title>
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -12,97 +12,62 @@
   </head>
   <body>
     <div class="container mt-5">
-      <h2 class="text-center">Cadastro de Produto</h2>
-
-      <!-- Formulário de cadastro de produto -->
-      <form id="productForm" class="mt-4">
-        <div class="mb-3">
-          <label for="productSelect" class="form-label">Selecione um Produto</label>
-          <select id="productSelect" class="form-control" required>
-            <option value="">Selecione um produto para editar</option>
-          </select>
+      <h2 class="text-center">Cadastro de Expositor e Produtos</h2>
+      
+      <!-- Expositor Card -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Expositor: <span id="expositorName">Carregando...</span></h5>
+          <p class="card-text">Aqui estão os produtos cadastrados.</p>
         </div>
+      </div>
 
+      <!-- Seção para Gerenciamento de Produtos -->
+      <h4>Gerenciar Produtos</h4>
+      
+      <!-- Select para Escolher Produto para Editar -->
+      <div class="mb-3">
+        <label for="productSelect" class="form-label">Escolha um Produto para Editar</label>
+        <select id="productSelect" class="form-select" onchange="loadProductDetails()">
+          <option value="">Selecione um produto...</option>
+        </select>
+      </div>
+
+      <!-- Formulário para Editar Produto -->
+      <div id="productForm" style="display: none;">
+        <h5>Editar Produto</h5>
         <div class="mb-3">
-          <label for="productName" class="form-label">Nome do Produto</label>
-          <input
-            type="text"
-            class="form-control"
-            id="productName"
-            placeholder="Nome do produto"
-            required
-          />
+          <label for="productName" class="form-label">Nome</label>
+          <input type="text" class="form-control" id="productName" placeholder="Nome do produto" required />
         </div>
-
         <div class="mb-3">
           <label for="productDescription" class="form-label">Descrição</label>
-          <textarea
-            class="form-control"
-            id="productDescription"
-            rows="3"
-            placeholder="Digite a descrição do produto"
-            required
-          ></textarea>
+          <textarea class="form-control" id="productDescription" rows="3" placeholder="Descrição do produto" required></textarea>
         </div>
-
         <div class="mb-3">
-          <label for="productPrice" class="form-label">Preço (R$)</label>
-          <input
-            type="text"
-            class="form-control"
-            id="productPrice"
-            placeholder="Digite o preço"
-            required
-          />
+          <label for="productPrice" class="form-label">Preço</label>
+          <input type="text" class="form-control" id="productPrice" placeholder="R$ 0,00" required />
         </div>
-
         <div class="mb-3">
-          <label for="productImage" class="form-label">Imagem do Produto</label>
+          <label for="productImage" class="form-label">Imagem</label>
           <input type="file" class="form-control" id="productImage" accept="image/*" />
-          <img
-            id="productImagePreview"
-            src="#"
-            alt="Prévia da imagem"
-            class="mt-2 img-thumbnail"
-            style="display: none; max-height: 150px"
-          />
+          <img id="productImagePreview" class="mt-2 img-thumbnail" style="display: none; max-height: 150px" />
         </div>
-
-        <button type="submit" class="btn btn-primary w-100">Salvar Produto</button>
-        <button
-          type="button"
-          id="deleteProductButton"
-          class="btn btn-danger w-100 mt-2"
-          style="display: none"
-        >
-          Deletar Produto
-        </button>
-      </form>
-
+        <button type="button" class="btn btn-primary" onclick="saveProduct()">Salvar</button>
+        <button type="button" class="btn btn-danger" onclick="deleteProduct()">Excluir Produto</button>
+      </div>
+      
+      <!-- Status -->
       <div id="status" class="mt-3"></div>
     </div>
 
     <!-- Firebase Scripts -->
     <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
-      import {
-        getFirestore,
-        doc,
-        getDoc,
-        setDoc,
-        addDoc,
-        collection,
-        deleteDoc
-      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
-      import {
-        getStorage,
-        ref,
-        uploadBytes,
-        getDownloadURL,
-        deleteObject
-      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js'
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+      import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
+      import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js';
 
-      // Configuração Firebase
+      // Configuração do Firebase
       const firebaseConfig = {
         apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
         authDomain: 'feira-265d4.firebaseapp.com',
@@ -111,182 +76,131 @@
         storageBucket: 'feira-265d4.firebasestorage.app',
         messagingSenderId: '124883888377',
         appId: '1:124883888377:web:c4e8c834b313127f6a5a28',
-        measurementId: 'G-2QFQD5NGXR'
-      }
+        measurementId: 'G-2QFQD5NGXR',
+      };
 
-      const app = initializeApp(firebaseConfig)
-      const db = getFirestore(app)
-      const storage = getStorage(app)
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const storage = getStorage(app);
 
-      const params = new URLSearchParams(window.location.search)
-      const uid = params.get('u')
-      const statusDiv = document.getElementById('status')
+      const params = new URLSearchParams(window.location.search);
+      const uid = params.get('u');
+      const statusDiv = document.getElementById('status');
+      const productSelect = document.getElementById('productSelect');
+      const productForm = document.getElementById('productForm');
 
       if (!uid) {
-        statusDiv.innerHTML =
-          '<div class="alert alert-danger">Erro: UID não encontrado na URL.</div>'
-        throw new Error('UID não encontrado na URL.')
+        statusDiv.innerHTML = '<div class="alert alert-danger">Erro: UID não encontrado na URL.</div>';
+        throw new Error('UID não encontrado na URL.');
       }
 
-      // Carregar produtos para o select
-      async function loadProducts() {
-        const productsSelect = document.getElementById('productSelect')
-        productsSelect.innerHTML = '<option value="">Selecione um produto para editar</option>'
-
+      // Carregar expositor e listar produtos
+      async function loadExpositor() {
+        const expositorNameElement = document.getElementById('expositorName');
         try {
-          const querySnapshot = await getDocs(collection(db, 'users', uid, 'products'))
-          querySnapshot.forEach((doc) => {
-            const data = doc.data()
-            const option = document.createElement('option')
-            option.value = doc.id
-            option.textContent = data.name
-            productsSelect.appendChild(option)
-          })
-        } catch (error) {
-          console.error('Erro ao carregar produtos:', error)
-          statusDiv.innerHTML =
-            '<div class="alert alert-danger">Erro ao carregar produtos.</div>'
-        }
-      }
-
-      // Salvar ou editar produto
-      async function saveProduct(name, description, price, imageFile, productId) {
-        try {
-          const productData = {
-            name,
-            description,
-            price: formatPrice(price),
-            createdAt: new Date()
-          }
-
-          if (imageFile) {
-            const imageRef = ref(storage, `products/${uid}/${name}.jpg`)
-            const imageSnapshot = await uploadBytes(imageRef, imageFile)
-            productData.imageURL = await getDownloadURL(imageSnapshot.ref)
-          }
-
-          if (productId) {
-            // Editando produto existente
-            await setDoc(doc(db, 'users', uid, 'products', productId), productData)
-            statusDiv.innerHTML =
-              '<div class="alert alert-success">Produto editado com sucesso!</div>'
+          const docRef = doc(db, 'users', uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            expositorNameElement.textContent = docSnap.data().name || 'Nome do Expositor';
+            loadProducts();
           } else {
-            // Criando novo produto
-            await addDoc(collection(db, 'users', uid, 'products'), productData)
-            statusDiv.innerHTML =
-              '<div class="alert alert-success">Produto salvo com sucesso!</div>'
+            statusDiv.innerHTML = '<div class="alert alert-warning">Expositor não encontrado.</div>';
           }
-
-          // Limpar formulário
-          resetForm()
-
-          // Atualizar o select com os produtos mais recentes
-          loadProducts()
-
         } catch (error) {
-          console.error('Erro ao salvar produto:', error)
-          statusDiv.innerHTML =
-            '<div class="alert alert-danger">Erro ao salvar produto.</div>'
+          console.error('Erro ao carregar expositor:', error);
+          statusDiv.innerHTML = '<div class="alert alert-danger">Erro ao carregar dados do expositor.</div>';
         }
+      }
+
+      // Carregar produtos e atualizar select
+      async function loadProducts() {
+        try {
+          const querySnapshot = await getDocs(collection(db, 'users', uid, 'products'));
+          productSelect.innerHTML = '<option value="">Selecione um produto...</option>';
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const option = document.createElement('option');
+            option.value = doc.id;
+            option.textContent = data.name;
+            productSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Erro ao carregar produtos:', error);
+          statusDiv.innerHTML = '<div class="alert alert-danger">Erro ao carregar produtos.</div>';
+        }
+      }
+
+      // Carregar detalhes do produto selecionado
+      async function loadProductDetails() {
+        const productId = productSelect.value;
+        if (productId) {
+          const productRef = doc(db, 'users', uid, 'products', productId);
+          const productSnap = await getDoc(productRef);
+          if (productSnap.exists()) {
+            const productData = productSnap.data();
+            document.getElementById('productName').value = productData.name || '';
+            document.getElementById('productDescription').value = productData.description || '';
+            document.getElementById('productPrice').value = productData.price || '';
+            if (productData.imageURL) {
+              const productImagePreview = document.getElementById('productImagePreview');
+              productImagePreview.src = productData.imageURL;
+              productImagePreview.style.display = 'block';
+            }
+            productForm.style.display = 'block';
+          } else {
+            alert('Produto não encontrado.');
+          }
+        }
+      }
+
+      // Salvar ou atualizar produto
+      async function saveProduct() {
+        const productName = document.getElementById('productName').value;
+        const productDescription = document.getElementById('productDescription').value;
+        const productPrice = document.getElementById('productPrice').value;
+        const productImageFile = document.getElementById('productImage').files[0];
+
+        const priceFormatted = productPrice.replace('R$', '').trim(); // Remove R$ e espaços
+
+        const productUpdates = {
+          name: productName,
+          description: productDescription,
+          price: `R$ ${parseFloat(priceFormatted).toFixed(2).replace('.', ',')}`, // Formatar preço
+        };
+
+        if (productImageFile) {
+          const imageRef = ref(storage, `users/${uid}/products/${productName}/image.jpg`);
+          const snapshot = await uploadBytes(imageRef, productImageFile);
+          productUpdates.imageURL = await getDownloadURL(snapshot.ref);
+        }
+
+        const productId = productSelect.value;
+        if (productId) {
+          await setDoc(doc(db, 'users', uid, 'products', productId), productUpdates);
+          statusDiv.innerHTML = '<div class="alert alert-success">Produto atualizado com sucesso!</div>';
+        } else {
+          await setDoc(doc(db, 'users', uid, 'products', productName), productUpdates);
+          statusDiv.innerHTML = '<div class="alert alert-success">Produto criado com sucesso!</div>';
+        }
+
+        loadProducts();
       }
 
       // Excluir produto
-      async function deleteProduct(productId) {
-        if (confirm('Tem certeza que deseja deletar este produto?')) {
-          try {
-            await deleteDoc(doc(db, 'users', uid, 'products', productId))
-
-            const imageRef = ref(storage, `products/${uid}/${productId}.jpg`)
-            await deleteObject(imageRef).catch(() => {})
-
-            statusDiv.innerHTML =
-              '<div class="alert alert-success">Produto deletado com sucesso!</div>'
-
-            loadProducts() // Atualizar select
-            resetForm() // Limpar formulário
-          } catch (error) {
-            console.error('Erro ao deletar produto:', error)
-            statusDiv.innerHTML =
-              '<div class="alert alert-danger">Erro ao deletar produto.</div>'
-          }
+      async function deleteProduct() {
+        const productId = productSelect.value;
+        if (productId && confirm('Tem certeza que deseja excluir este produto?')) {
+          const productRef = doc(db, 'users', uid, 'products', productId);
+          await deleteDoc(productRef);
+          statusDiv.innerHTML = '<div class="alert alert-success">Produto excluído com sucesso!</div>';
+          loadProducts();
         }
       }
 
-      // Formatação de preço para R$
-      function formatPrice(price) {
-        return `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`
-      }
-
-      // Limpar o formulário
-      function resetForm() {
-        document.getElementById('productForm').reset()
-        document.getElementById('productImagePreview').style.display = 'none'
-        document.getElementById('deleteProductButton').style.display = 'none'
-        document.getElementById('productSelect').value = ''
-      }
-
-      // Mostrar prévia da imagem
-      function showPreview(input, previewId) {
-        const file = input.files[0]
-        const preview = document.getElementById(previewId)
-        if (file) {
-          const objectURL = URL.createObjectURL(file)
-          preview.src = objectURL
-          preview.style.display = 'block'
-        } else {
-          preview.style.display = 'none'
-        }
-      }
-
-      // Eventos de alteração
-      document.getElementById('productImage').addEventListener('change', (e) => {
-        showPreview(e.target, 'productImagePreview')
-      })
-
-      document.getElementById('productSelect').addEventListener('change', async (e) => {
-        const productId = e.target.value
-        if (productId) {
-          try {
-            const docRef = doc(db, 'users', uid, 'products', productId)
-            const docSnap = await getDoc(docRef)
-
-            if (docSnap.exists()) {
-              const data = docSnap.data()
-              document.getElementById('productName').value = data.name || ''
-              document.getElementById('productDescription').value = data.description || ''
-              document.getElementById('productPrice').value = data.price.replace('R$ ', '').replace(',', '.')
-              const imagePreview = document.getElementById('productImagePreview')
-              imagePreview.src = data.imageURL || '#'
-              imagePreview.style.display = data.imageURL ? 'block' : 'none'
-
-              // Exibir botão de exclusão
-              document.getElementById('deleteProductButton').style.display = 'block'
-              document
-                .getElementById('deleteProductButton')
-                .addEventListener('click', () => deleteProduct(productId))
-            }
-          } catch (error) {
-            console.error('Erro ao carregar dados do produto:', error)
-          }
-        } else {
-          document.getElementById('deleteProductButton').style.display = 'none'
-        }
-      })
-
-      // Evento de envio do formulário
-      document.getElementById('productForm').addEventListener('submit', (e) => {
-        e.preventDefault()
-
-        const name = document.getElementById('productName').value
-        const description = document.getElementById('productDescription').value
-        const price = document.getElementById('productPrice').value
-        const imageFile = document.getElementById('productImage').files[0]
-        const productId = document.getElementById('productSelect').value
-
-        saveProduct(name, description, price, imageFile, productId)
-      })
-
-      loadProducts()
+      loadExpositor();
     </script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
