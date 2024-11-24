@@ -64,7 +64,7 @@
             type="text"
             class="form-control"
             id="productPrice"
-            placeholder="Preço do produto"
+            placeholder="Preço do produto (R$)"
             required
           />
         </div>
@@ -83,6 +83,11 @@
       </form>
 
       <div id="status" class="mt-3"></div>
+
+      <!-- Botão para Excluir Produto -->
+      <button id="deleteProductButton" class="btn btn-danger w-100 mt-3" style="display: none;">
+        Excluir Produto
+      </button>
     </div>
 
     <!-- Firebase Scripts -->
@@ -95,7 +100,8 @@
         setDoc,
         collection,
         addDoc,
-        getDocs
+        getDocs,
+        deleteDoc
       } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
       import {
         getStorage,
@@ -165,6 +171,7 @@
             collection(db, 'users', uid, 'products')
           )
           const selectElement = document.getElementById('productSelect')
+          selectElement.innerHTML = '<option value="">Selecione um produto</option>' // Limpar select
 
           querySnapshot.forEach((doc) => {
             const data = doc.data()
@@ -218,55 +225,56 @@
         }
       }
 
-      // Prévia de imagem
-      function showPreview(input, previewId) {
-        const file = input.files[0]
-        const preview = document.getElementById(previewId)
-        if (file) {
-          const objectURL = URL.createObjectURL(file)
-          preview.src = objectURL
-          preview.style.display = 'block'
-        } else {
-          preview.style.display = 'none'
+      // Excluir produto
+      async function deleteProduct(productId) {
+        const confirmDelete = confirm('Tem certeza que deseja excluir este produto?')
+        if (confirmDelete) {
+          try {
+            await deleteDoc(doc(db, 'users', uid, 'products', productId))
+            statusDiv.innerHTML =
+              '<div class="alert alert-success">Produto excluído com sucesso!</div>'
+            loadProducts()
+          } catch (error) {
+            console.error('Erro ao excluir produto:', error)
+            statusDiv.innerHTML =
+              '<div class="alert alert-danger">Erro ao excluir produto.</div>'
+          }
         }
       }
 
-      document.getElementById('productImage').addEventListener('change', e => {
-        showPreview(e.target, 'productImagePreview')
-      })
-
-      // Quando o expositor selecionar um produto
-      document.getElementById('productSelect').addEventListener('change', e => {
+      // Carregar dados do produto para edição
+      document.getElementById('productSelect').addEventListener('change', async (e) => {
         const productId = e.target.value
         if (productId) {
-          // Carregar os dados do produto selecionado
-          loadProductData(productId)
+          try {
+            const docRef = doc(db, 'users', uid, 'products', productId)
+            const docSnap = await getDoc(docRef)
+
+            if (docSnap.exists()) {
+              const data = docSnap.data()
+              document.getElementById('productName').value = data.name || ''
+              document.getElementById('productDescription').value = data.description || ''
+              document.getElementById('productPrice').value = data.price.replace('R$ ', '').replace(',', '.')
+              const imagePreview = document.getElementById('productImagePreview')
+              imagePreview.src = data.imageURL || '#'
+              imagePreview.style.display = data.imageURL ? 'block' : 'none'
+
+              // Exibir botão de exclusão
+              document.getElementById('deleteProductButton').style.display = 'block'
+              document
+                .getElementById('deleteProductButton')
+                .addEventListener('click', () => deleteProduct(productId))
+            }
+          } catch (error) {
+            console.error('Erro ao carregar dados do produto:', error)
+          }
+        } else {
+          document.getElementById('deleteProductButton').style.display = 'none'
         }
       })
 
-      async function loadProductData(productId) {
-        try {
-          const docRef = doc(db, 'users', uid, 'products', productId)
-          const docSnap = await getDoc(docRef)
-
-          if (docSnap.exists()) {
-            const data = docSnap.data()
-            document.getElementById('productName').value = data.name || ''
-            document.getElementById('productDescription').value = data.description || ''
-            document.getElementById('productPrice').value = data.price || ''
-
-            // Exibir imagem do produto
-            const imagePreview = document.getElementById('productImagePreview')
-            imagePreview.src = data.imageURL || '#'
-            imagePreview.style.display = data.imageURL ? 'block' : 'none'
-          }
-        } catch (error) {
-          console.error('Erro ao carregar dados do produto:', error)
-        }
-      }
-
       // Formulário de produto
-      document.getElementById('productForm').addEventListener('submit', async e => {
+      document.getElementById('productForm').addEventListener('submit', async (e) => {
         e.preventDefault()
         const name = document.getElementById('productName').value
         const description = document.getElementById('productDescription').value
