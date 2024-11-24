@@ -48,7 +48,7 @@
       }
       .google-btn i {
         margin-right: 10px;
-        color: #4285f4;
+        color: #db4437; /* Cor característica do Google */
       }
     </style>
   </head>
@@ -87,8 +87,9 @@
       </button>
       <hr />
       <div class="text-center">
-        <small id="toggleText">
-          Não tem conta? <a href="#" id="toggleForm">Cadastre-se</a>
+        <small>
+          <span id="toggleText">Não tem conta?</span>
+          <a href="#" id="toggleForm">Cadastre-se</a>
         </small>
       </div>
     </div>
@@ -134,9 +135,10 @@
         isLoginMode = !isLoginMode
         formTitle.textContent = isLoginMode ? 'Login' : 'Cadastro'
         authButton.textContent = isLoginMode ? 'Entrar' : 'Cadastrar'
-        toggleText.innerHTML = isLoginMode
-          ? 'Não tem conta? <a href="#" id="toggleForm">Cadastre-se</a>'
-          : 'Já tem conta? <a href="#" id="toggleForm">Login</a>'
+        toggleText.textContent = isLoginMode
+          ? 'Não tem conta?'
+          : 'Já tem conta?'
+        toggleFormLink.textContent = isLoginMode ? 'Cadastre-se' : 'Login'
       })
 
       // Autenticação com Email/Senha
@@ -147,17 +149,12 @@
         try {
           let result
           if (isLoginMode) {
-            // Login
             result = await signInWithEmailAndPassword(auth, email, password)
           } else {
-            // Cadastro
             result = await createUserWithEmailAndPassword(auth, email, password)
             const userRef = doc(db, 'users', result.user.uid)
             await setDoc(userRef, { email: email }, { merge: true })
           }
-          statusDiv.innerHTML = `<div class="alert alert-success">${
-            isLoginMode ? 'Login' : 'Cadastro'
-          } realizado com sucesso!</div>`
           window.location.href = `/exp/?ex=${result.user.uid}`
         } catch (error) {
           statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`
@@ -180,7 +177,6 @@
             },
             { merge: true }
           )
-          statusDiv.innerHTML = `<div class="alert alert-success">Login com Google bem-sucedido!</div>`
           window.location.href = `/exp/?ex=${user.uid}`
         } catch (error) {
           statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`
