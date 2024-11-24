@@ -78,31 +78,31 @@
       const app = initializeApp(firebaseConfig)
       const db = getFirestore(app)
 
-      // Função para recuperar o UID da URL
-      function getUIDFromURL() {
+      // Função para recuperar o 'ex' da URL
+      function getExFromURL() {
         const urlParams = new URLSearchParams(window.location.search)
-        return urlParams.get('uid')
+        return urlParams.get('ex')
       }
 
-      // Carregar produtos do produtor específico
+      // Carregar produtos do expositor específico
       async function loadProducts() {
-        const uid = getUIDFromURL()
+        const ex = getExFromURL()
         
-        if (!uid) {
+        if (!ex) {
           document.getElementById('productsContainer').innerHTML =
-            '<div class="col-12"><p class="text-center text-danger">UID do produtor não encontrado.</p></div>'
+            '<div class="col-12"><p class="text-center text-danger">Parâmetro "ex" não encontrado na URL.</p></div>'
           return
         }
 
         try {
           const productsRef = collection(db, 'products')
-          const q = query(productsRef, where('uid', '==', uid)) // Filtrar produtos pelo UID do produtor
+          const q = query(productsRef, where('ex', '==', ex)) // Filtrar produtos pelo 'ex' do expositor
           const querySnapshot = await getDocs(q)
           const productsContainer = document.getElementById('productsContainer')
 
           if (querySnapshot.empty) {
             productsContainer.innerHTML =
-              '<div class="col-12"><p class="text-center">Nenhum produto encontrado para este produtor.</p></div>'
+              '<div class="col-12"><p class="text-center">Nenhum produto encontrado para este expositor.</p></div>'
           } else {
             querySnapshot.forEach((doc) => {
               const data = doc.data()
