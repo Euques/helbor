@@ -13,7 +13,7 @@
   <body>
     <div class="container mt-5">
       <h2 class="text-center">Cadastro de Expositor e Produtos</h2>
-      
+
       <!-- Expositor Card -->
       <div class="card mb-4">
         <div class="card-body">
@@ -24,18 +24,10 @@
 
       <!-- Seção para Gerenciamento de Produtos -->
       <h4>Gerenciar Produtos</h4>
-      
-      <!-- Select para Escolher Produto para Editar -->
-      <div class="mb-3">
-        <label for="productSelect" class="form-label">Escolha um Produto para Editar</label>
-        <select id="productSelect" class="form-select" onchange="loadProductDetails()">
-          <option value="">Selecione um produto...</option>
-        </select>
-      </div>
 
-      <!-- Formulário para Editar Produto -->
-      <div id="productForm" style="display: none;">
-        <h5>Editar Produto</h5>
+      <!-- Seção de Cadastro de Novo Produto -->
+      <h5>Cadastrar Novo Produto</h5>
+      <div id="productForm">
         <div class="mb-3">
           <label for="productName" class="form-label">Nome</label>
           <input type="text" class="form-control" id="productName" placeholder="Nome do produto" required />
@@ -53,10 +45,40 @@
           <input type="file" class="form-control" id="productImage" accept="image/*" />
           <img id="productImagePreview" class="mt-2 img-thumbnail" style="display: none; max-height: 150px" />
         </div>
-        <button type="button" class="btn btn-primary" onclick="saveProduct()">Salvar</button>
+        <button type="button" class="btn btn-primary" onclick="saveProduct()">Cadastrar Produto</button>
+      </div>
+
+      <!-- Seção para Editar e Excluir Produtos -->
+      <h5>Editar ou Excluir Produto</h5>
+      <div class="mb-3">
+        <label for="productSelect" class="form-label">Escolha um Produto para Editar</label>
+        <select id="productSelect" class="form-select" onchange="loadProductDetails()">
+          <option value="">Selecione um produto...</option>
+        </select>
+      </div>
+
+      <div id="productEditForm" style="display: none;">
+        <div class="mb-3">
+          <label for="editProductName" class="form-label">Nome</label>
+          <input type="text" class="form-control" id="editProductName" required />
+        </div>
+        <div class="mb-3">
+          <label for="editProductDescription" class="form-label">Descrição</label>
+          <textarea class="form-control" id="editProductDescription" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="editProductPrice" class="form-label">Preço</label>
+          <input type="text" class="form-control" id="editProductPrice" required />
+        </div>
+        <div class="mb-3">
+          <label for="editProductImage" class="form-label">Imagem</label>
+          <input type="file" class="form-control" id="editProductImage" accept="image/*" />
+          <img id="editProductImagePreview" class="mt-2 img-thumbnail" style="display: none; max-height: 150px" />
+        </div>
+        <button type="button" class="btn btn-success" onclick="updateProduct()">Atualizar Produto</button>
         <button type="button" class="btn btn-danger" onclick="deleteProduct()">Excluir Produto</button>
       </div>
-      
+
       <!-- Status -->
       <div id="status" class="mt-3"></div>
     </div>
@@ -88,6 +110,7 @@
       const statusDiv = document.getElementById('status');
       const productSelect = document.getElementById('productSelect');
       const productForm = document.getElementById('productForm');
+      const productEditForm = document.getElementById('productEditForm');
 
       if (!uid) {
         statusDiv.innerHTML = '<div class="alert alert-danger">Erro: UID não encontrado na URL.</div>';
@@ -130,7 +153,7 @@
         }
       }
 
-      // Carregar detalhes do produto selecionado
+      // Carregar detalhes do produto selecionado para edição
       async function loadProductDetails() {
         const productId = productSelect.value;
         if (productId) {
@@ -138,68 +161,107 @@
           const productSnap = await getDoc(productRef);
           if (productSnap.exists()) {
             const productData = productSnap.data();
-            document.getElementById('productName').value = productData.name || '';
-            document.getElementById('productDescription').value = productData.description || '';
-            document.getElementById('productPrice').value = productData.price || '';
+            document.getElementById('editProductName').value = productData.name || '';
+            document.getElementById('editProductDescription').value = productData.description || '';
+            document.getElementById('editProductPrice').value = productData.price || '';
             if (productData.imageURL) {
-              const productImagePreview = document.getElementById('productImagePreview');
-              productImagePreview.src = productData.imageURL;
-              productImagePreview.style.display = 'block';
+              const editProductImagePreview = document.getElementById('editProductImagePreview');
+              editProductImagePreview.src = productData.imageURL;
+              editProductImagePreview.style.display = 'block';
             }
-            productForm.style.display = 'block';
+            productEditForm.style.display = 'block';
           } else {
             alert('Produto não encontrado.');
           }
         }
       }
 
-      // Salvar ou atualizar produto
+      // Salvar novo produto
       async function saveProduct() {
         const productName = document.getElementById('productName').value;
         const productDescription = document.getElementById('productDescription').value;
-        const productPrice = document.getElementById('productPrice').value;
-        const productImageFile = document.getElementById('productImage').files[0];
+        const productPrice = document.getElementById('productPrice').value.replace('R$ ', '').replace(',', '.');
+        const productImage = document.getElementById('productImage').files[0];
 
-        const priceFormatted = productPrice.replace('R$', '').trim(); // Remove R$ e espaços
+        if (!productName || !productDescription || !productPrice) {
+          alert('Preencha todos os campos.');
+          return;
+        }
 
-        const productUpdates = {
+        const productRef = doc(collection(db, 'users', uid, 'products'));
+
+        let imageUrl = '';
+        if (productImage) {
+          const storageRef = ref(storage, `images/${productImage.name}`);
+          await uploadBytes(storageRef, productImage);
+          imageUrl = await getDownloadURL(storageRef);
+        }
+
+        await setDoc(productRef, {
           name: productName,
           description: productDescription,
-          price: `R$ ${parseFloat(priceFormatted).toFixed(2).replace('.', ',')}`, // Formatar preço
-        };
+          price: parseFloat(productPrice),
+          imageURL: imageUrl,
+        });
 
-        if (productImageFile) {
-          const imageRef = ref(storage, `users/${uid}/products/${productName}/image.jpg`);
-          const snapshot = await uploadBytes(imageRef, productImageFile);
-          productUpdates.imageURL = await getDownloadURL(snapshot.ref);
-        }
+        statusDiv.innerHTML = '<div class="alert alert-success">Produto cadastrado com sucesso!</div>';
+        loadProducts(); // Atualiza a lista de produtos
+        document.getElementById('productForm').reset();
+      }
 
+      // Atualizar produto
+      async function updateProduct() {
         const productId = productSelect.value;
-        if (productId) {
-          await setDoc(doc(db, 'users', uid, 'products', productId), productUpdates);
-          statusDiv.innerHTML = '<div class="alert alert-success">Produto atualizado com sucesso!</div>';
-        } else {
-          await setDoc(doc(db, 'users', uid, 'products', productName), productUpdates);
-          statusDiv.innerHTML = '<div class="alert alert-success">Produto criado com sucesso!</div>';
+        const editProductName = document.getElementById('editProductName').value;
+        const editProductDescription = document.getElementById('editProductDescription').value;
+        const editProductPrice = document.getElementById('editProductPrice').value.replace('R$ ', '').replace(',', '.');
+        const editProductImage = document.getElementById('editProductImage').files[0];
+
+        if (!productId || !editProductName || !editProductDescription || !editProductPrice) {
+          alert('Preencha todos os campos.');
+          return;
         }
 
-        loadProducts();
+        const productRef = doc(db, 'users', uid, 'products', productId);
+
+        let imageUrl = '';
+        if (editProductImage) {
+          const storageRef = ref(storage, `images/${editProductImage.name}`);
+          await uploadBytes(storageRef, editProductImage);
+          imageUrl = await getDownloadURL(storageRef);
+        }
+
+        await setDoc(productRef, {
+          name: editProductName,
+          description: editProductDescription,
+          price: parseFloat(editProductPrice),
+          imageURL: imageUrl,
+        });
+
+        statusDiv.innerHTML = '<div class="alert alert-success">Produto atualizado com sucesso!</div>';
+        loadProducts(); // Atualiza a lista de produtos
       }
 
       // Excluir produto
       async function deleteProduct() {
         const productId = productSelect.value;
-        if (productId && confirm('Tem certeza que deseja excluir este produto?')) {
+        if (!productId) {
+          alert('Selecione um produto para excluir.');
+          return;
+        }
+
+        const confirmDelete = confirm('Tem certeza que deseja excluir este produto?');
+        if (confirmDelete) {
           const productRef = doc(db, 'users', uid, 'products', productId);
           await deleteDoc(productRef);
           statusDiv.innerHTML = '<div class="alert alert-success">Produto excluído com sucesso!</div>';
-          loadProducts();
+          loadProducts(); // Atualiza a lista de produtos
         }
       }
 
       loadExpositor();
     </script>
-    
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
