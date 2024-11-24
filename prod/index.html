@@ -199,7 +199,7 @@
       }
 
       // Salvar ou editar produto
-      async function saveProduct(name, description, price, imageFile, productId) {
+      async function saveProduct(name, description, price, imageFile, productId, currentImageURL) {
         try {
           const productData = {
             name,
@@ -208,10 +208,13 @@
             createdAt: new Date()
           }
 
+          // Se o usuário não enviar uma nova imagem, mantém a imagem existente
           if (imageFile) {
             const imageRef = ref(storage, `products/${uid}/${name}.jpg`)
             const imageSnapshot = await uploadBytes(imageRef, imageFile)
             productData.imageURL = await getDownloadURL(imageSnapshot.ref)
+          } else {
+            productData.imageURL = currentImageURL // Manter a imagem existente
           }
 
           if (productId) {
@@ -238,7 +241,9 @@
             await deleteDoc(doc(db, 'users', uid, 'products', productId))
             statusDiv.innerHTML =
               '<div class="alert alert-success">Produto excluído com sucesso!</div>'
-            loadProducts()
+            loadProducts() // Recarregar a lista de produtos
+            // Limpar dados do formulário
+            document.getElementById('productForm').reset()
           } catch (error) {
             console.error('Erro ao excluir produto:', error)
             statusDiv.innerHTML =
@@ -269,6 +274,9 @@
               document
                 .getElementById('deleteProductButton')
                 .addEventListener('click', () => deleteProduct(productId))
+
+              // Salvar a URL da imagem atual para garantir que ela não seja excluída
+              currentImageURL = data.imageURL
             }
           } catch (error) {
             console.error('Erro ao carregar dados do produto:', error)
@@ -293,7 +301,7 @@
           return
         }
 
-        await saveProduct(name, description, price, imageFile, productId)
+        await saveProduct(name, description, price, imageFile, productId, currentImageURL)
       })
 
       // Carregar expositor e produtos ao iniciar
@@ -305,6 +313,7 @@
         // Limpar dados do formulário
         document.getElementById('productForm').reset()
         document.getElementById('deleteProductButton').style.display = 'none'
+        currentImageURL = '' // Limpar a URL da imagem para novo produto
       })
     </script>
 
