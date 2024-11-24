@@ -198,8 +198,11 @@
         return `R$ ${priceFormatted}`
       }
 
+      // Variável para armazenar a URL da imagem atual
+      let currentImageURL = ''
+
       // Salvar ou editar produto
-      async function saveProduct(name, description, price, imageFile, productId, currentImageURL) {
+      async function saveProduct(name, description, price, imageFile, productId) {
         try {
           const productData = {
             name,
@@ -242,8 +245,8 @@
             statusDiv.innerHTML =
               '<div class="alert alert-success">Produto excluído com sucesso!</div>'
             loadProducts() // Recarregar a lista de produtos
-            // Limpar dados do formulário
             document.getElementById('productForm').reset()
+            document.getElementById('deleteProductButton').style.display = 'none'
           } catch (error) {
             console.error('Erro ao excluir produto:', error)
             statusDiv.innerHTML =
@@ -301,7 +304,7 @@
           return
         }
 
-        await saveProduct(name, description, price, imageFile, productId, currentImageURL)
+        await saveProduct(name, description, price, imageFile, productId)
       })
 
       // Carregar expositor e produtos ao iniciar
