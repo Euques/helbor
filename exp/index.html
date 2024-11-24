@@ -16,88 +16,100 @@
         font-family: 'Arial', sans-serif;
       }
 
-      .product-card {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 20px;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      .expositor-card {
         background-color: #fff;
-        transition: transform 0.3s ease;
-        height: 100%;
-        max-width: 300px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 30px;
+        text-align: center;
       }
 
-      .product-card:hover {
-        transform: translateY(-10px);
+      .expositor-card img {
+        border-radius: 50%;
+        object-fit: cover;
+        width: 150px;
+        height: 150px;
+        margin-bottom: 20px;
       }
 
-      .product-card .image-container {
-        width: 100%;
-        height: 200px;
-        background-size: cover;
-        background-position: center;
-        border-radius: 10px 10px 0 0;
-      }
-
-      .product-card .card-body {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-      }
-
-      .product-card .card-body h5 {
-        font-size: 1.25rem;
+      .expositor-card h5 {
+        font-size: 1.5rem;
         font-weight: bold;
         color: #333;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
       }
 
-      .product-card .card-body p {
+      .expositor-card p {
         font-size: 1rem;
-        color: #555;
-        margin-bottom: 15px;
+        color: #777;
         line-height: 1.5;
       }
 
-      .product-price {
+      .product-list {
+        margin-top: 30px;
+      }
+
+      .product-list-item {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+      }
+
+      .product-list-item:hover {
+        transform: translateY(-5px);
+      }
+
+      .product-list-item img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 20px;
+      }
+
+      .product-list-item .product-details {
+        flex: 1;
+      }
+
+      .product-list-item .product-name {
         font-size: 1.2rem;
         font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .product-list-item .product-description {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 10px;
+      }
+
+      .product-list-item .product-price {
+        font-size: 1.2rem;
         color: #2d6a4f;
-        margin-top: 10px;
-      }
-
-      .product-card .btn {
-        background-color: #2d6a4f;
-        color: #fff;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        text-transform: uppercase;
         font-weight: bold;
-        transition: background-color 0.3s ease;
-      }
-
-      .product-card .btn:hover {
-        background-color: #218c46;
       }
 
       /* Responsividade */
       @media (max-width: 768px) {
-        .product-card {
-          max-width: 100%;
+        .expositor-card {
+          padding: 20px;
         }
 
-        .product-card .card-body {
-          padding: 15px;
+        .product-list-item {
+          flex-direction: column;
+          text-align: center;
         }
-      }
 
-      .container {
-        margin-top: 50px;
+        .product-list-item img {
+          margin-bottom: 15px;
+        }
       }
     </style>
   </head>
@@ -106,20 +118,18 @@
       <h2 class="text-center mb-4">Produtos do Expositor</h2>
 
       <!-- Card do Expositor -->
-      <div id="expositorCard" class="card mb-4" style="max-width: 18rem;">
+      <div id="expositorCard" class="expositor-card">
         <img
           id="expositorLogo"
-          class="card-img-top"
+          src="https://via.placeholder.com/150"
           alt="Logo do Expositor"
-          style="height: 150px; object-fit: cover; border-radius: 50%;"
         />
-        <div class="card-body">
-          <h5 id="expositorName" class="card-title"></h5>
-          <p id="expositorDescription" class="card-text"></p>
-        </div>
+        <h5 id="expositorName">Nome do Expositor</h5>
+        <p id="expositorDescription">Descrição do Expositor</p>
       </div>
 
-      <div id="productsContainer" class="row row-cols-1 row-cols-md-3 g-4">
+      <!-- Lista de Produtos -->
+      <div id="productsContainer" class="product-list">
         <!-- Produtos serão inseridos aqui -->
       </div>
     </div>
@@ -188,7 +198,7 @@
         }
       }
 
-      // Carregar produtos do expositor e exibir em cards
+      // Carregar produtos do expositor e exibir em lista
       async function loadProducts() {
         try {
           const querySnapshot = await getDocs(
@@ -200,22 +210,19 @@
           querySnapshot.forEach((doc) => {
             const data = doc.data()
 
-            const productCard = document.createElement('div')
-            productCard.classList.add('col')
+            const productItem = document.createElement('div')
+            productItem.classList.add('product-list-item')
 
-            productCard.innerHTML = `
-              <div class="product-card">
-                <div class="image-container" style="background-image: url('${data.imageURL}');"></div>
-                <div class="card-body">
-                  <h5 class="card-title">${data.name}</h5>
-                  <p class="card-text">${data.description}</p>
-                  <p class="product-price">${data.price}</p>
-                  <button class="btn">Comprar</button>
-                </div>
+            productItem.innerHTML = `
+              <img src="${data.imageURL}" alt="${data.name}" />
+              <div class="product-details">
+                <div class="product-name">${data.name}</div>
+                <div class="product-description">${data.description}</div>
+                <div class="product-price">${data.price}</div>
               </div>
             `
 
-            productsContainer.appendChild(productCard)
+            productsContainer.appendChild(productItem)
           })
         } catch (error) {
           console.error('Erro ao carregar produtos:', error)
