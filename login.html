@@ -150,12 +150,13 @@
           let result
           if (isLoginMode) {
             result = await signInWithEmailAndPassword(auth, email, password)
+            window.location.href = `/exp/?ex=${result.user.uid}`
           } else {
             result = await createUserWithEmailAndPassword(auth, email, password)
             const userRef = doc(db, 'users', result.user.uid)
             await setDoc(userRef, { email: email }, { merge: true })
+            window.location.href = `/user/?u=${result.user.uid}`
           }
-          window.location.href = `/exp/?ex=${result.user.uid}`
         } catch (error) {
           statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`
         }
