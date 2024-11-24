@@ -162,27 +162,36 @@
         }
       })
 
-      // Login com Google
-      googleLoginButton.addEventListener('click', async () => {
-        const provider = new GoogleAuthProvider()
-        try {
-          const result = await signInWithPopup(auth, provider)
-          const user = result.user
-          const userRef = doc(db, 'users', user.uid)
-          await setDoc(
-            userRef,
-            {
-              email: user.email,
-              displayName: user.displayName,
-              photoURL: user.photoURL
-            },
-            { merge: true }
-          )
-          window.location.href = `/exp/?ex=${user.uid}`
-        } catch (error) {
-          statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`
-        }
-      })
+    // Login com Google
+googleLoginButton.addEventListener('click', async () => {
+  const provider = new GoogleAuthProvider()
+  try {
+    const result = await signInWithPopup(auth, provider)
+    const user = result.user
+
+    // Salvar os dados do usuário no Firestore
+    const userRef = doc(db, 'users', user.uid)
+    await setDoc(
+      userRef,
+      {
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      },
+      { merge: true }
+    )
+
+    // Redirecionar baseado no contexto (Login ou Cadastro)
+    if (isLoginMode) {
+      window.location.href = `/exp/?ex=${user.uid}`
+    } else {
+      window.location.href = `/user/?u=${user.uid}`
+    }
+  } catch (error) {
+    statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`
+  }
+})
+
     </script>
 
     <!-- Bootstrap JS -->
