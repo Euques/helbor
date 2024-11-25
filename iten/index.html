@@ -63,74 +63,107 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
-    import { getFirestore, doc, getDoc, collection, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    collection,
+    onSnapshot
+  } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
 
-    const firebaseConfig = {
-      apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
-      authDomain: 'feira-265d4.firebaseapp.com',
-      databaseURL: 'https://feira-265d4-default-rtdb.firebaseio.com',
-      projectId: 'feira-265d4',
-      storageBucket: 'feira-265d4.firebasestorage.app',
-      messagingSenderId: '124883888377',
-      appId: '1:124883888377:web:c4e8c834b313127f6a5a28',
-      measurementId: 'G-2QFQD5NGXR'
-    }
+  const firebaseConfig = {
+    apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
+    authDomain: 'feira-265d4.firebaseapp.com',
+    databaseURL: 'https://feira-265d4-default-rtdb.firebaseio.com',
+    projectId: 'feira-265d4',
+    storageBucket: 'feira-265d4.firebasestorage.app',
+    messagingSenderId: '124883888377',
+    appId: '1:124883888377:web:c4e8c834b313127f6a5a28',
+    measurementId: 'G-2QFQD5NGXR'
+  }
 
-    const app = initializeApp(firebaseConfig)
-    const db = getFirestore(app)
+  const app = initializeApp(firebaseConfig)
+  const db = getFirestore(app)
 
-    const params = new URLSearchParams(window.location.search)
-    const productId = params.get('id')
-    const expositorUid = params.get('ex')
+  const params = new URLSearchParams(window.location.search)
+  const uid = params.get('ex')
 
-    if (!productId || !expositorUid) {
-      alert('Erro: ID do produto ou UID do expositor não encontrado na URL.')
-      throw new Error('ID do produto ou UID do expositor não encontrado.')
-    }
+  if (!uid) {
+    alert('Erro: UID não encontrado na URL.')
+    throw new Error('UID não encontrado na URL.')
+  }
 
-    // Função para carregar os dados do produto
-    function loadProduct(productId, expositorUid) {
-      const productRef = doc(db, 'users', expositorUid, 'products', productId)
+  // Função para carregar os dados do expositor
+  async function loadExpositor() {
+    try {
+      const docRef = doc(db, 'users', uid)
+      const docSnap = await getDoc(docRef)
 
-      // Monitorando mudanças em tempo real no produto
-      onSnapshot(productRef, (productSnap) => {
-        if (productSnap.exists()) {
-          const productData = productSnap.data()
-          document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
-          document.getElementById('productDescription').textContent = productData.description || 'Sem descrição.'
-          document.getElementById('productPrice').textContent = productData.price
-            ? `R$ ${parseFloat(productData.price).toFixed(2)}`
-            : 'Preço não informado.'
-          document.getElementById('productImage').src = productData.imageURL || 'https://via.placeholder.com/600x300'
-          document.getElementById('productLink').href = `../iten/?p=${expositorUid}&id=${productId}`
-        } else {
-          alert('Produto não encontrado.')
+      if (docSnap.exists()) {
+        const data = docSnap.data()
+        document.getElementById('expositorName').textContent =
+          data.name || ''
+        document.getElementById('expositorDescription').textContent =
+          data.description || ''
+
+        if (data.logoURL) {
+          const logoPreview = document.getElementById('expositorLogo')
+          logoPreview.src = data.logoURL
         }
-      })
+      } else {
+        alert('Expositor não encontrado.')
+      }
+    } catch (error) {
+      console.error('Erro ao carregar expositor:', error)
     }
+  }
 
-    // Função para carregar os dados do expositor
-    function loadExpositor(expositorUid) {
-      const expositorRef = doc(db, 'users', expositorUid)
+  // Função para renderizar a lista de produtos
+  function renderProductList(querySnapshot) {
+    const productsContainer = document.getElementById('productsContainer')
+    productsContainer.innerHTML = '' // Limpar lista de produtos
 
-      // Monitorando mudanças em tempo real no expositor
-      onSnapshot(expositorRef, (expositorSnap) => {
-        if (expositorSnap.exists()) {
-          const expositorData = expositorSnap.data()
-          document.getElementById('expositorName').textContent = expositorData.name || 'Nome do Expositor'
-          document.getElementById('expositorDescription').textContent = expositorData.description || 'Sem descrição.'
-          document.getElementById('expositorLogo').src = expositorData.logoURL || 'https://via.placeholder.com/100x100'
-        } else {
-          alert('Expositor não encontrado.')
-        }
-      })
-    }
+    querySnapshot.forEach(doc => {
+      const data = doc.data()
 
-    // Carregar o produto e o expositor
-    loadProduct(productId, expositorUid)
-    loadExpositor(expositorUid)
-  </script>
+      const productItem = document.createElement('li')
+      productItem.classList.add('product-item')
+
+      // Formatação do preço em R$
+      const price = data.price ? `R$ ${parseFloat(data.price).toFixed(2)}` : 'Preço não informado'
+
+      productItem.innerHTML = `
+        <img src="${data.imageURL}" alt="${data.name}" />
+        <div class="product-info">
+          <div class="product-name">${data.name}</div>
+          <div class="product-description">${data.description}</div>
+          <div class="product-price">${price}</div>
+        </div>
+        <a href="../iten/?p=${uid}&id=${doc.id}" class="action-button">
+          <i class="fa fa-chevron-right"></i>
+        </a>
+      `
+
+      productsContainer.appendChild(productItem)
+    })
+  }
+
+  // Função para monitorar mudanças nos produtos em tempo real
+  function listenToProductChanges() {
+    const productsRef = collection(db, 'users', uid, 'products')
+
+    // Monitorando mudanças em tempo real
+    onSnapshot(productsRef, querySnapshot => {
+      renderProductList(querySnapshot)
+    })
+  }
+
+  // Carregar o expositor e monitorar os produtos em tempo real
+  loadExpositor()
+  listenToProductChanges()
+</script>
+
 </body>
 </html>
