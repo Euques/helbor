@@ -44,7 +44,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Dados do Produto -->
     <div class="product-container">
       <img id="productImage" class="product-image" src="https://via.placeholder.com/600x300" alt="Imagem do Produto">
       <div class="product-info">
@@ -52,118 +51,81 @@
         <p id="productDescription">Descrição do produto aparecerá aqui.</p>
         <p class="price" id="productPrice">R$ 0,00</p>
       </div>
-      <a id="productLink" href="#" class="btn btn-primary">Ver Detalhes</a>
-    </div>
-
-    <!-- Dados do Expositor -->
-    <div class="seller-info">
-      <h3 id="expositorName">Nome do Expositor</h3>
-      <p id="expositorDescription">Descrição do expositor.</p>
-      <img id="expositorLogo" src="https://via.placeholder.com/100x100" alt="Logo do Expositor" class="img-fluid">
+      <div class="seller-info">
+        <p id="sellerName">Vendedor: Nome do Vendedor</p>
+        <p id="sellerDescription">Descrição do vendedor.</p>
+      </div>
     </div>
   </div>
 
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-    collection,
-    onSnapshot
-  } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
+    import { getFirestore, doc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
 
-  const firebaseConfig = {
-    apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
-    authDomain: 'feira-265d4.firebaseapp.com',
-    databaseURL: 'https://feira-265d4-default-rtdb.firebaseio.com',
-    projectId: 'feira-265d4',
-    storageBucket: 'feira-265d4.firebasestorage.app',
-    messagingSenderId: '124883888377',
-    appId: '1:124883888377:web:c4e8c834b313127f6a5a28',
-    measurementId: 'G-2QFQD5NGXR'
-  }
-
-  const app = initializeApp(firebaseConfig)
-  const db = getFirestore(app)
-
-  const params = new URLSearchParams(window.location.search)
-  const uid = params.get('ex')
-
-  if (!uid) {
-    alert('Erro: UID não encontrado na URL.')
-    throw new Error('UID não encontrado na URL.')
-  }
-
-  // Função para carregar os dados do expositor
-  async function loadExpositor() {
-    try {
-      const docRef = doc(db, 'users', uid)
-      const docSnap = await getDoc(docRef)
-
-      if (docSnap.exists()) {
-        const data = docSnap.data()
-        document.getElementById('expositorName').textContent =
-          data.name || ''
-        document.getElementById('expositorDescription').textContent =
-          data.description || ''
-
-        if (data.logoURL) {
-          const logoPreview = document.getElementById('expositorLogo')
-          logoPreview.src = data.logoURL
-        }
-      } else {
-        alert('Expositor não encontrado.')
-      }
-    } catch (error) {
-      console.error('Erro ao carregar expositor:', error)
+    // Configuração Firebase
+    const firebaseConfig = {
+      apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
+      authDomain: 'feira-265d4.firebaseapp.com',
+      databaseURL: 'https://feira-265d4-default-rtdb.firebaseio.com',
+      projectId: 'feira-265d4',
+      storageBucket: 'feira-265d4.firebasestorage.app',
+      messagingSenderId: '124883888377',
+      appId: '1:124883888377:web:c4e8c834b313127f6a5a28',
+      measurementId: 'G-2QFQD5NGXR'
     }
-  }
 
-  // Função para renderizar a lista de produtos
-  function renderProductList(querySnapshot) {
-    const productsContainer = document.getElementById('productsContainer')
-    productsContainer.innerHTML = '' // Limpar lista de produtos
+    const app = initializeApp(firebaseConfig)
+    const db = getFirestore(app)
 
-    querySnapshot.forEach(doc => {
-      const data = doc.data()
+    // Capturar o `id` do produto e `p` (uid do produtor) da URL
+    const params = new URLSearchParams(window.location.search)
+    const productId = params.get('id')
+    const producerUid = params.get('p')
 
-      const productItem = document.createElement('li')
-      productItem.classList.add('product-item')
+    if (!productId || !producerUid) {
+      alert('Erro: ID do produto ou UID do produtor não encontrado na URL.')
+      throw new Error('ID do produto ou UID do produtor não encontrado.')
+    }
 
-      // Formatação do preço em R$
-      const price = data.price ? `R$ ${parseFloat(data.price).toFixed(2)}` : 'Preço não informado'
+    // Função para carregar os dados do produto
+    function loadProduct(productId, producerUid) {
+      const productRef = doc(db, 'users', producerUid, 'products', productId)
 
-      productItem.innerHTML = `
-        <img src="${data.imageURL}" alt="${data.name}" />
-        <div class="product-info">
-          <div class="product-name">${data.name}</div>
-          <div class="product-description">${data.description}</div>
-          <div class="product-price">${price}</div>
-        </div>
-        <a href="../iten/?p=${uid}&id=${doc.id}" class="action-button">
-          <i class="fa fa-chevron-right"></i>
-        </a>
-      `
+      // Monitorar mudanças em tempo real no produto
+      onSnapshot(productRef, (productSnap) => {
+        if (productSnap.exists()) {
+          const productData = productSnap.data()
+          document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
+          document.getElementById('productDescription').textContent = productData.description || 'Sem descrição.'
+          document.getElementById('productPrice').textContent = productData.price
+            ? `R$ ${parseFloat(productData.price).toFixed(2)}`
+            : 'Preço não informado.'
+          document.getElementById('productImage').src = productData.imageURL || 'https://via.placeholder.com/600x300'
+        } else {
+          alert('Produto não encontrado.')
+        }
+      })
+    }
 
-      productsContainer.appendChild(productItem)
-    })
-  }
+    // Função para carregar os dados do produtor
+    function loadProducer(producerUid) {
+      const producerRef = doc(db, 'users', producerUid)
 
-  // Função para monitorar mudanças nos produtos em tempo real
-  function listenToProductChanges() {
-    const productsRef = collection(db, 'users', uid, 'products')
+      // Monitorar mudanças em tempo real no expositor
+      onSnapshot(producerRef, (producerSnap) => {
+        if (producerSnap.exists()) {
+          const producerData = producerSnap.data()
+          document.getElementById('sellerName').textContent = `Vendedor: ${producerData.name || 'Nome do Vendedor'}`
+          document.getElementById('sellerDescription').textContent = producerData.description || 'Sem descrição.'
+        } else {
+          alert('Produtor não encontrado.')
+        }
+      })
+    }
 
-    // Monitorando mudanças em tempo real
-    onSnapshot(productsRef, querySnapshot => {
-      renderProductList(querySnapshot)
-    })
-  }
-
-  // Carregar o expositor e monitorar os produtos em tempo real
-  loadExpositor()
-  listenToProductChanges()
-</script>
-
+    // Carregar o produto e o produtor
+    loadProduct(productId, producerUid)
+    loadProducer(producerUid)
+  </script>
 </body>
 </html>
