@@ -10,43 +10,12 @@
       rel="stylesheet"
     />
     <style>
+      /* Estilo permanece o mesmo (do código anterior) */
       body {
         background-color: #f7f7f7;
         font-family: 'Arial', sans-serif;
       }
 
-      /* Expositor card */
-      .expositor-card {
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin-bottom: 20px;
-        text-align: center;
-      }
-
-      .expositor-card img {
-        border-radius: 50%;
-        object-fit: cover;
-        width: 120px;
-        height: 120px;
-        margin-bottom: 10px;
-      }
-
-      .expositor-card h5 {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 5px;
-      }
-
-      .expositor-card p {
-        font-size: 1rem;
-        color: #777;
-        line-height: 1.5;
-      }
-
-      /* Produtos */
       .product-list {
         list-style: none;
         padding: 0;
@@ -55,6 +24,7 @@
 
       .product-item {
         display: flex;
+        justify-content: space-between;
         background-color: #fff;
         margin-bottom: 10px;
         border-radius: 8px;
@@ -85,53 +55,20 @@
         margin-bottom: 5px;
       }
 
-      .product-description {
-        font-size: 1rem;
-        color: #555;
-        margin-bottom: 10px;
+      .product-actions {
+        display: flex;
+        gap: 10px;
       }
 
-      .product-price {
-        font-size: 1.2rem;
-        color: #2d6a4f;
-        font-weight: bold;
-      }
-
-      /* Responsividade */
-      @media (max-width: 768px) {
-        .product-item {
-          flex-direction: column;
-          max-height: none;
-        }
-
-        .product-item img {
-          width: 100%;
-          height: 150px;
-        }
-
-        .product-info {
-          align-items: center;
-          text-align: center;
-        }
+      .product-actions button {
+        padding: 5px 10px;
+        font-size: 0.9rem;
       }
     </style>
   </head>
   <body>
     <div class="container mt-4">
       <h2 class="text-center mb-4">Produtos do Expositor</h2>
-
-      <!-- Card do Expositor -->
-      <div id="expositorCard" class="expositor-card">
-        <img
-          id="expositorLogo"
-          src="https://via.placeholder.com/120"
-          alt="Logo do Expositor"
-        />
-        <h5 id="expositorName">Nome do Expositor</h5>
-        <p id="expositorDescription">Descrição do Expositor</p>
-      </div>
-
-      <!-- Lista de Produtos -->
       <ul id="productsContainer" class="product-list"></ul>
     </div>
 
@@ -140,10 +77,12 @@
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
       import {
         getFirestore,
+        collection,
+        addDoc,
+        updateDoc,
+        deleteDoc,
         doc,
-        getDoc,
-        getDocs,
-        collection
+        onSnapshot
       } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
 
       const firebaseConfig = {
@@ -168,39 +107,17 @@
         throw new Error('UID não encontrado na URL.')
       }
 
-      async function loadExpositor() {
-        try {
-          const docRef = doc(db, 'users', uid)
-          const docSnap = await getDoc(docRef)
+      const productsContainer = document.getElementById('productsContainer')
 
-          if (docSnap.exists()) {
-            const data = docSnap.data()
-            document.getElementById('expositorName').textContent = data.name || ''
-            document.getElementById('expositorDescription').textContent =
-              data.description || ''
-
-            if (data.logoURL) {
-              const logoPreview = document.getElementById('expositorLogo')
-              logoPreview.src = data.logoURL
-            }
-          } else {
-            alert('Expositor não encontrado.')
-          }
-        } catch (error) {
-          console.error('Erro ao carregar expositor:', error)
-        }
-      }
-
-      async function loadProducts() {
-        try {
-          const querySnapshot = await getDocs(
-            collection(db, 'users', uid, 'products')
-          )
-          const productsContainer = document.getElementById('productsContainer')
+      // Função para atualizar lista de produtos em tempo real
+      const loadProducts = () => {
+        const productsRef = collection(db, 'users', uid, 'products')
+        onSnapshot(productsRef, (snapshot) => {
           productsContainer.innerHTML = '' // Limpar lista de produtos
 
-          querySnapshot.forEach((doc) => {
+          snapshot.forEach((doc) => {
             const data = doc.data()
+            const productId = doc.id
 
             const productItem = document.createElement('li')
             productItem.classList.add('product-item')
@@ -212,19 +129,83 @@
                 <div class="product-description">${data.description}</div>
                 <div class="product-price">${data.price}</div>
               </div>
+              <div class="product-actions">
+                <button class="btn btn-primary btn-sm edit-btn" data-id="${productId}">Editar</button>
+                <button class="btn btn-danger btn-sm delete-btn" data-id="${productId}">Excluir</button>
+              </div>
             `
 
             productsContainer.appendChild(productItem)
           })
-        } catch (error) {
-          console.error('Erro ao carregar produtos:', error)
+
+          // Adicionar eventos para os botões após criar os elementos
+          addProductActions()
+        })
+      }
+
+      // Adicionar eventos aos botões de editar e excluir
+      const addProductActions = () => {
+        const editButtons = document.querySelectorAll('.edit-btn')
+        const deleteButtons = document.querySelectorAll('.delete-btn')
+
+        editButtons.forEach((button) => {
+          button.addEventListener('click', (e) => {
+            const productId = e.target.dataset.id
+            // Lógica de edição (atualizar produto)
+            editProduct(productId)
+          })
+        })
+
+        deleteButtons.forEach((button) => {
+          button.addEventListener('click', (e) => {
+            const productId = e.target.dataset.id
+            // Lógica de exclusão (com confirmação)
+            deleteProduct(productId)
+          })
+        })
+      }
+
+      // Função para editar produto
+      const editProduct = async (productId) => {
+        const newName = prompt('Digite o novo nome do produto:')
+        const newPrice = prompt('Digite o novo preço:')
+        const newDescription = prompt('Digite a nova descrição:')
+
+        if (newName && newPrice && newDescription) {
+          try {
+            const productRef = doc(db, 'users', uid, 'products', productId)
+            await updateDoc(productRef, {
+              name: newName,
+              price: newPrice,
+              description: newDescription
+            })
+            alert('Produto atualizado com sucesso!')
+          } catch (error) {
+            console.error('Erro ao atualizar produto:', error)
+          }
+        } else {
+          alert('Edição cancelada ou informações incompletas.')
         }
       }
 
-      loadExpositor()
+      // Função para excluir produto
+      const deleteProduct = async (productId) => {
+        const confirmDelete = confirm('Tem certeza de que deseja excluir este produto?')
+
+        if (confirmDelete) {
+          try {
+            const productRef = doc(db, 'users', uid, 'products', productId)
+            await deleteDoc(productRef)
+            alert('Produto excluído com sucesso!')
+          } catch (error) {
+            console.error('Erro ao excluir produto:', error)
+          }
+        }
+      }
+
+      // Inicializar a carga dos produtos
       loadProducts()
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
