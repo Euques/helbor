@@ -23,18 +23,22 @@
     .product-info {
       margin-top: 20px;
     }
-    .product-info h2 {
+    .product-info .product-name {
       font-size: 1.5rem;
       margin-bottom: 10px;
     }
-    .product-info p {
+    .product-info .product-description {
       font-size: 1rem;
       margin-bottom: 10px;
     }
-    .price {
+    .product-info .product-price {
       font-size: 1.2rem;
       font-weight: bold;
       color: #2d6a4f;
+    }
+    .product-info .product-seller {
+      margin-top: 10px;
+      font-size: 1rem;
     }
   </style>
 </head>
@@ -43,10 +47,10 @@
     <div class="product-container">
       <img id="productImage" class="product-image" src="https://via.placeholder.com/600x300" alt="Imagem do Produto">
       <div class="product-info">
-        <h2 id="productName">Nome do Produto</h2>
-        <p id="productDescription">Descrição do produto aparecerá aqui.</p>
-        <p class="price" id="productPrice">R$ 0,00</p>
-        <p id="productSeller">Vendedor: Nome do Produtor</p>
+        <div class="product-name" id="productName">Nome do Produto</div>
+        <div class="product-description" id="productDescription">Descrição do produto aparecerá aqui.</div>
+        <div class="product-price" id="productPrice">R$ 0,00</div>
+        <div class="product-seller" id="productSeller">Vendedor: Nome do Produtor</div>
       </div>
     </div>
   </div>
@@ -88,6 +92,8 @@
 
         if (productSnap.exists()) {
           const productData = productSnap.data();
+          
+          // Atualizando os dados do produto
           document.getElementById("productName").textContent = productData.name || "Nome não disponível";
           document.getElementById("productDescription").textContent = productData.description || "Sem descrição.";
           document.getElementById("productPrice").textContent = productData.price
