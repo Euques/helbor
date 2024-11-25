@@ -97,9 +97,7 @@
           const productData = productSnap.data()
           document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
           document.getElementById('productDescription').textContent = productData.description || 'Sem descrição.'
-          document.getElementById('productPrice').textContent = productData.price
-            ? `R$ ${parseFloat(productData.price).toFixed(2)}`
-            : 'Preço não informado.'
+          document.getElementById('productPrice').textContent = productData.price || 'Preço não informado.'
           document.getElementById('productImage').src = productData.imageURL || 'https://via.placeholder.com/600x300'
         } else {
           alert('Produto não encontrado.')
