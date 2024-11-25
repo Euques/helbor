@@ -23,21 +23,21 @@
     .product-info {
       margin-top: 20px;
     }
-    .product-info .product-name {
+    .product-info h2 {
       font-size: 1.5rem;
       margin-bottom: 10px;
     }
-    .product-info .product-description {
+    .product-info p {
       font-size: 1rem;
       margin-bottom: 10px;
     }
-    .product-info .product-price {
+    .price {
       font-size: 1.2rem;
       font-weight: bold;
       color: #2d6a4f;
     }
-    .product-info .product-seller {
-      margin-top: 10px;
+    .seller-info {
+      margin-top: 20px;
       font-size: 1rem;
     }
   </style>
@@ -47,82 +47,89 @@
     <div class="product-container">
       <img id="productImage" class="product-image" src="https://via.placeholder.com/600x300" alt="Imagem do Produto">
       <div class="product-info">
-        <div class="product-name" id="productName">Nome do Produto</div>
-        <div class="product-description" id="productDescription">Descrição do produto aparecerá aqui.</div>
-        <div class="product-price" id="productPrice">R$ 0,00</div>
-        <div class="product-seller" id="productSeller">Vendedor: Nome do Produtor</div>
+        <h2 id="productName">Nome do Produto</h2>
+        <p id="productDescription">Descrição do produto aparecerá aqui.</p>
+        <p class="price" id="productPrice">R$ 0,00</p>
+      </div>
+      <div class="seller-info">
+        <p id="sellerName">Vendedor: Nome do Vendedor</p>
+        <p id="sellerDescription">Descrição do vendedor.</p>
       </div>
     </div>
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
+    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
 
     // Configuração Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ",
-      authDomain: "feira-265d4.firebaseapp.com",
-      databaseURL: "https://feira-265d4-default-rtdb.firebaseio.com",
-      projectId: "feira-265d4",
-      storageBucket: "feira-265d4.firebasestorage.app",
-      messagingSenderId: "124883888377",
-      appId: "1:124883888377:web:c4e8c834b313127f6a5a28",
-      measurementId: "G-2QFQD5NGXR"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Capturar os parâmetros da URL
-    const params = new URLSearchParams(window.location.search);
-    const productId = params.get('id'); // O ID do produto
-    const producerUid = params.get('p'); // O UID do produtor
-
-    if (!productId || !producerUid) {
-      alert("ID do produto ou UID do produtor não encontrado na URL.");
-      throw new Error("ID do produto ou UID do produtor não encontrado.");
+      apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
+      authDomain: 'feira-265d4.firebaseapp.com',
+      databaseURL: 'https://feira-265d4-default-rtdb.firebaseio.com',
+      projectId: 'feira-265d4',
+      storageBucket: 'feira-265d4.firebasestorage.app',
+      messagingSenderId: '124883888377',
+      appId: '1:124883888377:web:c4e8c834b313127f6a5a28',
+      measurementId: 'G-2QFQD5NGXR'
     }
 
-    // Função para carregar os dados do produto
-    async function loadProduct(productId, producerUid) {
+    const app = initializeApp(firebaseConfig)
+    const db = getFirestore(app)
+
+    // Capturar o `id` do produto e `p` (uid do produtor) da URL
+    const params = new URLSearchParams(window.location.search)
+    const productId = params.get('id')
+    const producerUid = params.get('p')
+
+    if (!productId || !producerUid) {
+      alert('Erro: ID do produto ou UID do produtor não encontrado na URL.')
+      throw new Error('ID do produto ou UID do produtor não encontrado.')
+    }
+
+    // Função para carregar o produto
+    async function loadProduct(productId) {
       try {
-        const productRef = doc(db, "products", productId); // Referência para o produto
-        const productSnap = await getDoc(productRef);
+        const productRef = doc(db, 'products', productId)
+        const productSnap = await getDoc(productRef)
 
         if (productSnap.exists()) {
-          const productData = productSnap.data();
-          
-          // Atualizando os dados do produto
-          document.getElementById("productName").textContent = productData.name || "Nome não disponível";
-          document.getElementById("productDescription").textContent = productData.description || "Sem descrição.";
-          document.getElementById("productPrice").textContent = productData.price
+          const productData = productSnap.data()
+          document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
+          document.getElementById('productDescription').textContent = productData.description || 'Sem descrição.'
+          document.getElementById('productPrice').textContent = productData.price
             ? `R$ ${parseFloat(productData.price).toFixed(2)}`
-            : "Preço não informado.";
-          document.getElementById("productImage").src = productData.imageURL || "https://via.placeholder.com/600x300";
+            : 'Preço não informado.'
+          document.getElementById('productImage').src = productData.imageURL || 'https://via.placeholder.com/600x300'
         } else {
-          alert("Produto não encontrado.");
+          alert('Produto não encontrado.')
         }
-
-        // Buscar os dados do produtor
-        const producerRef = doc(db, "users", producerUid); // Referência para o produtor
-        const producerSnap = await getDoc(producerRef);
-
-        if (producerSnap.exists()) {
-          const producerData = producerSnap.data();
-          document.getElementById("productSeller").textContent = `Vendedor: ${producerData.name || "Nome do Produtor"}`;
-        } else {
-          alert("Produtor não encontrado.");
-        }
-
       } catch (error) {
-        console.error("Erro ao carregar os dados:", error);
-        alert("Erro ao carregar os dados.");
+        console.error('Erro ao carregar produto:', error)
       }
     }
 
-    // Carregar os dados do produto e do produtor
-    loadProduct(productId, producerUid);
+    // Função para carregar os dados do produtor
+    async function loadProducer(producerUid) {
+      try {
+        const producerRef = doc(db, 'users', producerUid)
+        const producerSnap = await getDoc(producerRef)
+
+        if (producerSnap.exists()) {
+          const producerData = producerSnap.data()
+          document.getElementById('sellerName').textContent = `Vendedor: ${producerData.name || 'Nome do Vendedor'}`
+          document.getElementById('sellerDescription').textContent = producerData.description || 'Sem descrição.'
+        } else {
+          alert('Produtor não encontrado.')
+        }
+      } catch (error) {
+        console.error('Erro ao carregar produtor:', error)
+      }
+    }
+
+    // Carregar o produto e o produtor
+    loadProduct(productId)
+    loadProducer(producerUid)
   </script>
 </body>
 </html>
