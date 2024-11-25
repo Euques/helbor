@@ -50,60 +50,60 @@
     </div>
   </div>
 
- <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-  // Configuração Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ",
-    authDomain: "feira-265d4.firebaseapp.com",
-    databaseURL: "https://feira-265d4-default-rtdb.firebaseio.com",
-    projectId: "feira-265d4",
-    storageBucket: "feira-265d4.firebasestorage.app",
-    messagingSenderId: "124883888377",
-    appId: "1:124883888377:web:c4e8c834b313127f6a5a28",
-    measurementId: "G-2QFQD5NGXR"
-  };
+    // Configuração Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ",
+      authDomain: "feira-265d4.firebaseapp.com",
+      databaseURL: "https://feira-265d4-default-rtdb.firebaseio.com",
+      projectId: "feira-265d4",
+      storageBucket: "feira-265d4.firebasestorage.app",
+      messagingSenderId: "124883888377",
+      appId: "1:124883888377:web:c4e8c834b313127f6a5a28",
+      measurementId: "G-2QFQD5NGXR"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  // Capturar o `id` da URL
-  const params = new URLSearchParams(window.location.search);
-  const productId = params.get('id'); // Agora estamos pegando o valor de 'id'
+    // Capturar os parâmetros da URL
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id'); // Agora estamos pegando o valor de 'id'
+    const productParam = params.get('p'); // Caso precise do 'p', pode pegar assim
 
-  if (!productId) {
-    alert("ID do produto não encontrado na URL.");
-    throw new Error("ID do produto não encontrado.");
-  }
-
-  // Função para carregar os dados do produto
-  async function loadProduct(productId) {
-    try {
-      const docRef = doc(db, "products", productId); // Ajuste o caminho conforme sua estrutura
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const productData = docSnap.data();
-        document.getElementById("productName").textContent = productData.name || "Nome não disponível";
-        document.getElementById("productDescription").textContent = productData.description || "Sem descrição.";
-        document.getElementById("productPrice").textContent = productData.price
-          ? `R$ ${parseFloat(productData.price).toFixed(2)}`
-          : "Preço não informado.";
-        document.getElementById("productImage").src = productData.imageURL || "https://via.placeholder.com/600x300";
-      } else {
-        alert("Produto não encontrado.");
-      }
-    } catch (error) {
-      console.error("Erro ao carregar produto:", error);
-      alert("Erro ao carregar os dados do produto.");
+    if (!productId) {
+      alert("ID do produto não encontrado na URL.");
+      throw new Error("ID do produto não encontrado.");
     }
-  }
 
-  // Carregar os dados do produto
-  loadProduct(productId);
-</script>
+    // Função para carregar os dados do produto
+    async function loadProduct(productId) {
+      try {
+        const docRef = doc(db, "products", productId); // Ajuste o caminho conforme sua estrutura
+        const docSnap = await getDoc(docRef);
 
+        if (docSnap.exists()) {
+          const productData = docSnap.data();
+          document.getElementById("productName").textContent = productData.name || "Nome não disponível";
+          document.getElementById("productDescription").textContent = productData.description || "Sem descrição.";
+          document.getElementById("productPrice").textContent = productData.price
+            ? `R$ ${parseFloat(productData.price).toFixed(2)}`
+            : "Preço não informado.";
+          document.getElementById("productImage").src = productData.imageURL || "https://via.placeholder.com/600x300";
+        } else {
+          alert("Produto não encontrado.");
+        }
+      } catch (error) {
+        console.error("Erro ao carregar produto:", error);
+        alert("Erro ao carregar os dados do produto.");
+      }
+    }
+
+    // Carregar os dados do produto
+    loadProduct(productId);
+  </script>
 </body>
 </html>
