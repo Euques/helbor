@@ -60,7 +60,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
-    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
+    import { getFirestore, doc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
 
     // Configuração Firebase
     const firebaseConfig = {
@@ -87,12 +87,12 @@
       throw new Error('ID do produto ou UID do produtor não encontrado.')
     }
 
-    // Função para carregar o produto
-    async function loadProduct(productId, producerUid) {
-      try {
-        const productRef = doc(db, 'users', producerUid, 'products', productId)
-        const productSnap = await getDoc(productRef)
+    // Função para carregar os dados do produto
+    function loadProduct(productId, producerUid) {
+      const productRef = doc(db, 'users', producerUid, 'products', productId)
 
+      // Monitorar mudanças em tempo real no produto
+      onSnapshot(productRef, (productSnap) => {
         if (productSnap.exists()) {
           const productData = productSnap.data()
           document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
@@ -104,17 +104,15 @@
         } else {
           alert('Produto não encontrado.')
         }
-      } catch (error) {
-        console.error('Erro ao carregar produto:', error)
-      }
+      })
     }
 
     // Função para carregar os dados do produtor
-    async function loadProducer(producerUid) {
-      try {
-        const producerRef = doc(db, 'users', producerUid)
-        const producerSnap = await getDoc(producerRef)
+    function loadProducer(producerUid) {
+      const producerRef = doc(db, 'users', producerUid)
 
+      // Monitorar mudanças em tempo real no expositor
+      onSnapshot(producerRef, (producerSnap) => {
         if (producerSnap.exists()) {
           const producerData = producerSnap.data()
           document.getElementById('sellerName').textContent = `Vendedor: ${producerData.name || 'Nome do Vendedor'}`
@@ -122,9 +120,7 @@
         } else {
           alert('Produtor não encontrado.')
         }
-      } catch (error) {
-        console.error('Erro ao carregar produtor:', error)
-      }
+      })
     }
 
     // Carregar o produto e o produtor
