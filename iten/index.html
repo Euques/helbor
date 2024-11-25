@@ -88,9 +88,9 @@
     }
 
     // Função para carregar o produto
-    async function loadProduct(productId) {
+    async function loadProduct(productId, producerUid) {
       try {
-        const productRef = doc(db, 'products', productId)
+        const productRef = doc(db, 'users', producerUid, 'products', productId)
         const productSnap = await getDoc(productRef)
 
         if (productSnap.exists()) {
@@ -128,7 +128,7 @@
     }
 
     // Carregar o produto e o produtor
-    loadProduct(productId)
+    loadProduct(productId, producerUid)
     loadProducer(producerUid)
   </script>
 </body>
