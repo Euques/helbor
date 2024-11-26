@@ -1,207 +1,215 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- Font Awesome Icons -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        background-color: #f8f9fa;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-      .card {
-        width: 100%;
-        max-width: 400px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
-      .google-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: white;
-        color: #5f6368;
-        font-weight: bold;
-        border: 1px solid #dadce0;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-      .google-btn:hover {
-        background-color: #f8f9fa;
-      }
-      .google-btn i {
-        margin-right: 10px;
-        color: #db4437; /* Cor característica do Google */
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card p-4">
-      <h2 class="text-center mb-4" id="formTitle">Login</h2>
-      <div id="status" class="mb-3"></div>
-      <!-- Login/Cadastro Form -->
-      <form id="authForm">
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input
-            type="email"
-            id="email"
-            class="form-control"
-            placeholder="Digite seu email"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Senha</label>
-          <input
-            type="password"
-            id="password"
-            class="form-control"
-            placeholder="Digite sua senha"
-            required
-          />
-        </div>
-        <button type="submit" class="btn btn-primary w-100" id="authButton">
-          Entrar
-        </button>
-      </form>
-      <button id="googleLogin" class="google-btn w-100 mt-3">
-        <i class="fab fa-google"></i> Login com Google
-      </button>
-      <hr />
-      <div class="text-center">
-        <small>
-          <span id="toggleText">Não tem conta?</span>
-          <a href="#" id="toggleForm">Cadastre-se</a>
-        </small>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Expositores</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <div class="container mt-5">
+    <div id="status" class="mt-3"></div> <!-- Mover alertas para o topo -->
+    <h2 class="text-center">Cadastro de Expositor</h2>
+    <form id="expositorForm" class="mt-4">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nome</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          placeholder="Digite o nome"
+          required
+        />
       </div>
-    </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Descrição</label>
+        <textarea
+          class="form-control"
+          id="description"
+          rows="3"
+          placeholder="Digite a descrição"
+          required
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="category" class="form-label">Categoria</label>
+        <input
+          type="text"
+          class="form-control"
+          id="category"
+          placeholder="Digite a categoria"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="whatsapp" class="form-label">WhatsApp</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="whatsapp"
+          placeholder="Digite o número de WhatsApp"
+          required
+          pattern="\d*"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="logo" class="form-label">Logotipo</label>
+        <input type="file" class="form-control" id="logo" accept="image/*" />
+        <img
+          id="logoPreview"
+          src="#"
+          alt="Prévia do logotipo"
+          class="mt-2 img-thumbnail"
+          style="display: none; max-height: 150px"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">Imagem</label>
+        <input type="file" class="form-control" id="image" accept="image/*" />
+        <img
+          id="imagePreview"
+          src="#"
+          alt="Prévia da imagem"
+          class="mt-2 img-thumbnail"
+          style="display: none; max-height: 150px"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Salvar</button>
+      <button
+        id="deleteButton"
+        type="button"
+        class="btn btn-danger w-100 mt-2"
+      >
+        Deletar
+      </button>
+    </form>
+  </div>
 
-    <!-- Firebase Scripts -->
-    <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
-      import {
-        getAuth,
-        signInWithEmailAndPassword,
-        createUserWithEmailAndPassword,
-        signInWithPopup,
-        GoogleAuthProvider
-      } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js'
-      import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      deleteDoc
+    } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL,
+      deleteObject
+    } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js'
 
-      const firebaseConfig = {
-        apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
-        authDomain: 'feira-265d4.firebaseapp.com',
-        projectId: 'feira-265d4',
-        storageBucket: 'feira-265d4.appspot.com',
-        messagingSenderId: '124883888377',
-        appId: '1:124883888377:web:63262744266bf5186a5a28',
-        measurementId: 'G-P5BDCBNMHE'
-      }
-      const app = initializeApp(firebaseConfig)
-      const auth = getAuth(app)
-      const db = getFirestore(app)
-
-      const statusDiv = document.getElementById('status')
-      const authForm = document.getElementById('authForm')
-      const googleLoginButton = document.getElementById('googleLogin')
-      const toggleFormLink = document.getElementById('toggleForm')
-      const formTitle = document.getElementById('formTitle')
-      const authButton = document.getElementById('authButton')
-      const toggleText = document.getElementById('toggleText')
-
-      let isLoginMode = true // Alterna entre login e cadastro
-
-      // Alternar entre Login e Cadastro
-      toggleFormLink.addEventListener('click', (e) => {
-        e.preventDefault()
-        isLoginMode = !isLoginMode
-        formTitle.textContent = isLoginMode ? 'Login' : 'Cadastro'
-        authButton.textContent = isLoginMode ? 'Entrar' : 'Cadastrar'
-        toggleText.textContent = isLoginMode
-          ? 'Não tem conta?'
-          : 'Já tem conta?'
-        toggleFormLink.textContent = isLoginMode ? 'Cadastre-se' : 'Login'
-      })
-
-      // Autenticação com Email/Senha
-      authForm.addEventListener('submit', async (e) => {
-        e.preventDefault()
-        const email = document.getElementById('email').value
-        const password = document.getElementById('password').value
-        try {
-          let result
-          if (isLoginMode) {
-            result = await signInWithEmailAndPassword(auth, email, password)
-            window.location.href = `/exp/?ex=${result.user.uid}`
-          } else {
-            result = await createUserWithEmailAndPassword(auth, email, password)
-            const userRef = doc(db, 'users', result.user.uid)
-            await setDoc(userRef, { email: email }, { merge: true })
-            window.location.href = `/user/?u=${result.user.uid}`
-          }
-        } catch (error) {
-          statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`
-        }
-      })
-
-    // Login com Google
-googleLoginButton.addEventListener('click', async () => {
-  const provider = new GoogleAuthProvider()
-  try {
-    const result = await signInWithPopup(auth, provider)
-    const user = result.user
-
-    // Salvar os dados do usuário no Firestore
-    const userRef = doc(db, 'users', user.uid)
-    await setDoc(
-      userRef,
-      {
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL
-      },
-      { merge: true }
-    )
-
-    // Redirecionar baseado no contexto (Login ou Cadastro)
-    if (isLoginMode) {
-      window.location.href = `/exp/?ex=${user.uid}`
-    } else {
-      window.location.href = `/user/?u=${user.uid}`
+    const firebaseConfig = {
+      apiKey: 'AIzaSyB8-03eq_8LCMfcxuY-Z4eCVWV32Ad4lfQ',
+      authDomain: 'feira-265d4.firebaseapp.com',
+      projectId: 'feira-265d4',
+      storageBucket: 'feira-265d4.appspot.com',
     }
-  } catch (error) {
-    statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`
-  }
-})
 
-    </script>
+    const app = initializeApp(firebaseConfig)
+    const db = getFirestore(app)
+    const storage = getStorage(app)
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Font Awesome JS -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
-      integrity="sha512-9bK5DkW/pKL3TfB2XE1N9H5EQPAA5sW+a4P7smEJoSLzoEhCqAy5U8WPKTPP6B7iDR/cf5h2kBiN9RUl3x6ZyQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-  </body>
+    const params = new URLSearchParams(window.location.search)
+    const uid = params.get('u')
+    const statusDiv = document.getElementById('status')
+
+    if (!uid) {
+      showAlert('Erro: UID não encontrado na URL.', 'danger')
+      throw new Error('UID não encontrado na URL.')
+    }
+
+    function showAlert(message, type) {
+      statusDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`
+      setTimeout(() => (statusDiv.innerHTML = ''), 5000)
+    }
+
+    async function loadExpositor() {
+      try {
+        const docRef = doc(db, 'users', uid)
+        const docSnap = await getDoc(docRef)
+
+        if (docSnap.exists()) {
+          const data = docSnap.data()
+          document.getElementById('name').value = data.name || ''
+          document.getElementById('description').value = data.description || ''
+          document.getElementById('category').value = data.category || ''
+          document.getElementById('whatsapp').value = data.whatsapp || ''
+
+          if (data.logoURL) {
+            const logoPreview = document.getElementById('logoPreview')
+            logoPreview.src = data.logoURL
+            logoPreview.style.display = 'block'
+          }
+          if (data.imageURL) {
+            const imagePreview = document.getElementById('imagePreview')
+            imagePreview.src = data.imageURL
+            imagePreview.style.display = 'block'
+          }
+        } else {
+          showAlert('Expositor não encontrado.', 'warning')
+        }
+      } catch (error) {
+        console.error('Erro ao carregar expositor:', error)
+        showAlert('Erro ao carregar dados.', 'danger')
+      }
+    }
+
+    async function saveExpositor(
+      uid,
+      name,
+      description,
+      category,
+      whatsapp,
+      logoFile,
+      imageFile
+    ) {
+      try {
+        const whatsappDigits = whatsapp.replace(/\D/g, '') // Remover caracteres não numéricos
+        const updates = { name, description, category, whatsapp: whatsappDigits, updatedAt: new Date() }
+
+        if (logoFile) {
+          const logoRef = ref(storage, `users/${uid}/logo.jpg`)
+          const logoSnapshot = await uploadBytes(logoRef, logoFile)
+          updates.logoURL = await getDownloadURL(logoSnapshot.ref)
+        }
+        if (imageFile) {
+          const imageRef = ref(storage, `users/${uid}/image.jpg`)
+          const imageSnapshot = await uploadBytes(imageRef, imageFile)
+          updates.imageURL = await getDownloadURL(imageSnapshot.ref)
+        }
+
+        await setDoc(doc(db, 'users', uid), updates, { merge: true })
+        showAlert('Dados salvos com sucesso!', 'success')
+      } catch (error) {
+        console.error('Erro ao salvar expositor:', error)
+        showAlert('Erro ao salvar dados.', 'danger')
+      }
+    }
+
+    document.getElementById('expositorForm').addEventListener('submit', async e => {
+      e.preventDefault()
+      const name = document.getElementById('name').value
+      const description = document.getElementById('description').value
+      const category = document.getElementById('category').value
+      const whatsapp = document.getElementById('whatsapp').value
+      const logoFile = document.getElementById('logo').files[0]
+      const imageFile = document.getElementById('image').files[0]
+      await saveExpositor(uid, name, description, category, whatsapp, logoFile, imageFile)
+    })
+
+    loadExpositor()
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
