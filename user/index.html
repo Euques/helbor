@@ -9,6 +9,8 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <!-- Inputmask -->
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.6/dist/inputmask.min.js"></script>
   </head>
   <body>
     <div class="container mt-5">
@@ -53,7 +55,7 @@
             placeholder="Digite o número de WhatsApp"
             required
           />
-          <small class="text-muted">Exemplo: +55 11 98765-4321</small>
+          <small class="text-muted">Exemplo: (11) 94972-6856</small>
         </div>
         <div class="mb-3">
           <label for="logo" class="form-label">Logotipo</label>
@@ -141,8 +143,9 @@
 
       // Validar número de WhatsApp
       function validateWhatsapp(whatsapp) {
-        const regex = /^\+55\d{2}\d{5}-\d{4}$/
-        return regex.test(whatsapp)
+        // Remove todos os caracteres não numéricos
+        const rawWhatsapp = whatsapp.replace(/\D/g, '')
+        return rawWhatsapp.length === 11 // Verifica se o número tem 11 dígitos
       }
 
       // Carregar expositor e exibir imagens
@@ -230,33 +233,14 @@
         } catch (error) {
           console.error('Erro ao deletar expositor:', error)
           statusDiv.innerHTML =
-            '<div class="alert alert-danger">Erro ao deletar dados.</div>'
+            '<div class="alert alert-danger">Erro ao deletar expositor.</div>'
         }
       }
 
-      // Prévia de imagem
-      function showPreview(input, previewId) {
-        const file = input.files[0]
-        if (file && validateImage(file)) {
-          const reader = new FileReader()
-          reader.onload = function (e) {
-            const preview = document.getElementById(previewId)
-            preview.src = e.target.result
-            preview.style.display = 'block'
-          }
-          reader.readAsDataURL(file)
-        } else {
-          alert('Selecione uma imagem válida.')
-        }
-      }
-
-      document.getElementById('logo').addEventListener('change', function () {
-        showPreview(this, 'logoPreview')
-      })
-
-      document.getElementById('image').addEventListener('change', function () {
-        showPreview(this, 'imagePreview')
-      })
+      // Máscara do WhatsApp com Inputmask
+      const whatsappInput = document.getElementById('whatsapp')
+      const mask = new Inputmask('(99) 99999-9999')
+      mask.mask(whatsappInput)
 
       document
         .getElementById('expositorForm')
@@ -275,12 +259,23 @@
             return
           }
 
-          if (!validateWhatsapp(whatsapp)) {
-            alert('Número de WhatsApp inválido. Exemplo: +55 11 98765-4321')
+          // Remove todos os caracteres não numéricos do WhatsApp
+          const rawWhatsapp = whatsapp.replace(/\D/g, '')
+
+          if (!validateWhatsapp(rawWhatsapp)) {
+            alert('Número de WhatsApp inválido. Exemplo: (11) 94972-6856')
             return
           }
 
-          await saveExpositor(uid, name, description, category, whatsapp, logoFile, imageFile)
+          await saveExpositor(
+            uid,
+            name,
+            description,
+            category,
+            rawWhatsapp,
+            logoFile,
+            imageFile
+          )
         })
 
       document
@@ -294,8 +289,5 @@
       // Carregar expositor ao iniciar a página
       loadExpositor()
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@firebase/firestore@11.0.2/dist/index.esm.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@firebase/storage@11.0.2/dist/index.esm.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@firebase/app@11.0.2/dist/index.esm.js"></script>
   </body>
 </html>
