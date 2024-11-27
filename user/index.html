@@ -45,6 +45,17 @@
           />
         </div>
         <div class="mb-3">
+          <label for="whatsapp" class="form-label">WhatsApp</label>
+          <input
+            type="text"
+            class="form-control"
+            id="whatsapp"
+            placeholder="Digite o número de WhatsApp"
+            required
+          />
+          <small class="text-muted">Exemplo: +55 11 98765-4321</small>
+        </div>
+        <div class="mb-3">
           <label for="logo" class="form-label">Logotipo</label>
           <input type="file" class="form-control" id="logo" accept="image/*" />
           <img
@@ -122,6 +133,18 @@
         throw new Error('UID não encontrado na URL.')
       }
 
+      // Verificar se o arquivo é uma imagem válida
+      function validateImage(file) {
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif']
+        return validTypes.includes(file.type)
+      }
+
+      // Validar número de WhatsApp
+      function validateWhatsapp(whatsapp) {
+        const regex = /^\+55\d{2}\d{5}-\d{4}$/
+        return regex.test(whatsapp)
+      }
+
       // Carregar expositor e exibir imagens
       async function loadExpositor() {
         try {
@@ -134,6 +157,7 @@
             document.getElementById('description').value =
               data.description || ''
             document.getElementById('category').value = data.category || ''
+            document.getElementById('whatsapp').value = data.whatsapp || ''
 
             // Exibir as imagens carregadas anteriormente
             if (data.logoURL) {
@@ -163,11 +187,12 @@
         name,
         description,
         category,
+        whatsapp,
         logoFile,
         imageFile
       ) {
         try {
-          const updates = { name, description, category, updatedAt: new Date() }
+          const updates = { name, description, category, whatsapp, updatedAt: new Date() }
 
           if (logoFile) {
             const logoRef = ref(storage, `users/${uid}/logo.jpg`)
@@ -212,41 +237,50 @@
       // Prévia de imagem
       function showPreview(input, previewId) {
         const file = input.files[0]
-        const preview = document.getElementById(previewId)
-        if (file) {
-          const objectURL = URL.createObjectURL(file)
-          preview.src = objectURL
-          preview.style.display = 'block'
+        if (file && validateImage(file)) {
+          const reader = new FileReader()
+          reader.onload = function (e) {
+            const preview = document.getElementById(previewId)
+            preview.src = e.target.result
+            preview.style.display = 'block'
+          }
+          reader.readAsDataURL(file)
         } else {
-          preview.style.display = 'none'
+          alert('Selecione uma imagem válida.')
         }
       }
 
-      document.getElementById('logo').addEventListener('change', e => {
-        showPreview(e.target, 'logoPreview')
+      document.getElementById('logo').addEventListener('change', function () {
+        showPreview(this, 'logoPreview')
       })
 
-      document.getElementById('image').addEventListener('change', e => {
-        showPreview(e.target, 'imagePreview')
+      document.getElementById('image').addEventListener('change', function () {
+        showPreview(this, 'imagePreview')
       })
 
       document
         .getElementById('expositorForm')
-        .addEventListener('submit', async e => {
+        .addEventListener('submit', async (e) => {
           e.preventDefault()
+
           const name = document.getElementById('name').value
           const description = document.getElementById('description').value
           const category = document.getElementById('category').value
+          const whatsapp = document.getElementById('whatsapp').value
           const logoFile = document.getElementById('logo').files[0]
           const imageFile = document.getElementById('image').files[0]
-          await saveExpositor(
-            uid,
-            name,
-            description,
-            category,
-            logoFile,
-            imageFile
-          )
+
+          if (!name || !description || !category || !whatsapp) {
+            alert('Todos os campos devem ser preenchidos!')
+            return
+          }
+
+          if (!validateWhatsapp(whatsapp)) {
+            alert('Número de WhatsApp inválido. Exemplo: +55 11 98765-4321')
+            return
+          }
+
+          await saveExpositor(uid, name, description, category, whatsapp, logoFile, imageFile)
         })
 
       document
@@ -257,10 +291,11 @@
           }
         })
 
+      // Carregar expositor ao iniciar a página
       loadExpositor()
     </script>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@firebase/firestore@11.0.2/dist/index.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@firebase/storage@11.0.2/dist/index.esm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@firebase/app@11.0.2/dist/index.esm.js"></script>
   </body>
 </html>
