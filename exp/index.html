@@ -171,6 +171,7 @@
       doc,
       getDoc,
       collection,
+      getDocs,
       onSnapshot
     } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
     import {
@@ -241,12 +242,13 @@ Acesse aqui: ${currentUrl}
 
           whatsappButton.href = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
           whatsappButton.target = '_blank';
-          whatsappButton.className = 'btn btn-primary mt-3';
-          whatsappButton.style.backgroundColor = '#007bff';
-          whatsappButton.innerHTML = `<i class="fab fa-whatsapp"></i> Compartilhar no WhatsApp`;
-          descriptionElement.parentNode.appendChild(whatsappButton);
+          whatsappButton.className = 'btn btn-success mt-3';
+          whatsappButton.innerHTML = '<i class="fab fa-whatsapp"></i> Compartilhar no WhatsApp';
+
+          descriptionElement.appendChild(whatsappButton);
+
         } else {
-          alert('Expositor não encontrado.');
+          console.log('Expositor não encontrado!');
         }
       } catch (error) {
         console.error('Erro ao carregar expositor:', error);
@@ -255,7 +257,7 @@ Acesse aqui: ${currentUrl}
 
     function renderProductList(querySnapshot) {
       const productsContainer = document.getElementById('productsContainer');
-      productsContainer.innerHTML = '';
+      productsContainer.innerHTML = ''; // Limpa a lista de produtos antes de adicionar
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
