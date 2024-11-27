@@ -20,7 +20,6 @@
         font-family: 'Arial', sans-serif;
       }
 
-      /* Expositor card */
       .expositor-card {
         background-color: #fff;
         border-radius: 10px;
@@ -39,19 +38,6 @@
         margin-bottom: 10px;
       }
 
-      .expositor-card h5 {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 5px;
-      }
-
-      .expositor-card p {
-        font-size: 1rem;
-        color: #777;
-        line-height: 1.5;
-      }
-
       .edit-button {
         position: absolute;
         top: 10px;
@@ -62,96 +48,23 @@
         padding: 5px 10px;
         border-radius: 5px;
         text-decoration: none;
+        display: none;
         cursor: pointer;
       }
 
-      .edit-button:hover {
-        background-color: #218838;
-      }
-
-      /* Produtos */
-      .product-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .product-item {
-        display: flex;
-        background-color: #fff;
-        margin-bottom: 10px;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        max-height: 200px;
-        position: relative;
-      }
-
-      .product-item img {
-        width: 130px;
-        height: 130px;
-        object-fit: cover;
-        flex-shrink: 0;
-      }
-
-      @media (max-width: 768px) {
-    .product-item img {
-        /* width: 100px; */
-    }
-}
-
-      .product-info {
-        flex: 1;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      .product-name {
-        font-size: 1rem;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 5px;
-      }
-
-      .product-description {
-        font-size: 0.9rem;
-        color: #555;
-        margin-bottom: 10px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
-        -webkit-box-orient: vertical;
-      }
-
-      .product-price {
-        font-size: 1rem;
-        color: #2d6a4f;
-        font-weight: bold;
-      }
-
-      .action-button {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        background-color: #007bff;
-        border: none;
+      .whatsapp-button {
+        background-color: #25d366;
         color: #fff;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 25px;
         text-decoration: none;
+        font-size: 1rem;
+        margin-top: 15px;
+        display: inline-block;
       }
 
-      .action-button i {
-        font-size: 1rem;
-        line-height: 1;
+      .whatsapp-button:hover {
+        background-color: #1ebe59;
       }
     </style>
   </head>
@@ -172,12 +85,16 @@
           id="editButton"
           href="#"
           class="edit-button"
-          style="display: none"
         >Editar</a>
+        <a
+          id="whatsappButton"
+          href="#"
+          class="whatsapp-button"
+          target="_blank"
+        >
+          Compartilhar no WhatsApp
+        </a>
       </div>
-
-      <!-- Lista de Produtos -->
-      <ul id="productsContainer" class="product-list"></ul>
     </div>
 
     <script type="module">
@@ -186,8 +103,6 @@
         getFirestore,
         doc,
         getDoc,
-        collection,
-        onSnapshot,
       } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
       import {
         getAuth,
@@ -230,8 +145,12 @@
               data.description || '';
 
             if (data.logoURL) {
-              const logoPreview = document.getElementById('expositorLogo');
-              logoPreview.src = data.logoURL;
+              document.getElementById('expositorLogo').src = data.logoURL;
+            }
+
+            if (data.whatsapp) {
+              const whatsappButton = document.getElementById('whatsappButton');
+              whatsappButton.href = `https://wa.me/${data.whatsapp}?text=Olá!%20Conheça%20os%20produtos%20de%20${data.name}.`;
             }
           } else {
             alert('Expositor não encontrado.');
@@ -241,52 +160,16 @@
         }
       }
 
-      function renderProductList(querySnapshot) {
-        const productsContainer = document.getElementById('productsContainer');
-        productsContainer.innerHTML = '';
-
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-
-          const productItem = document.createElement('li');
-          productItem.classList.add('product-item');
-
-          productItem.innerHTML = `
-            <img src="${data.imageURL}" alt="${data.name}" />
-            <div class="product-info">
-              <div class="product-name">${data.name}</div>
-              <div class="product-description">${data.description}</div>
-              <div class="product-price">${data.price}</div>
-            </div>
-            <a href="../iten/?p=${uid}&id=${doc.id}" class="action-button">
-              <i class="fa fa-chevron-right"></i>
-            </a>
-          `;
-
-          productsContainer.appendChild(productItem);
-        });
-      }
-
-      function listenToProductChanges() {
-        const productsRef = collection(db, 'users', uid, 'products');
-
-        onSnapshot(productsRef, (querySnapshot) => {
-          renderProductList(querySnapshot);
-        });
-      }
-
       function checkUserAuthentication() {
         onAuthStateChanged(auth, (user) => {
-          if (user) {
-            const editButton = document.getElementById('editButton');
-            editButton.href = `../prod/?u=${uid}`;
-            editButton.style.display = 'block';
+          if (user && user.uid === uid) {
+            document.getElementById('editButton').style.display = 'block';
+            document.getElementById('editButton').href = `../prod/?u=${uid}`;
           }
         });
       }
 
       loadExpositor();
-      listenToProductChanges();
       checkUserAuthentication();
     </script>
 
