@@ -206,20 +206,35 @@
 
       if (docSnap.exists()) {
         const data = docSnap.data();
+        const currentUrl = window.location.href;
+
         document.getElementById('expositorName').textContent = data.name || '';
         document.getElementById('expositorDescription').textContent =
           data.description || '';
 
+        let logoUrl = '';
         if (data.logoURL) {
           const logoPreview = document.getElementById('expositorLogo');
           logoPreview.src = data.logoURL;
+          logoUrl = data.logoURL;
         }
 
         // Adiciona o botão "Compartilhar no WhatsApp"
         const descriptionElement = document.getElementById('expositorDescription');
         const whatsappButton = document.createElement('a');
+
+        const whatsappMessage = `
+Confira este expositor incrível:
+*${data.name || ''}*
+_${data.description || ''}_
+
+Acesse aqui: ${currentUrl}
+
+🔗 ${logoUrl}
+        `.trim();
+
         whatsappButton.href = `https://wa.me/?text=${encodeURIComponent(
-          `Confira o expositor: ${data.name} - ${data.description}`
+          whatsappMessage
         )}`;
         whatsappButton.target = '_blank';
         whatsappButton.className = 'btn btn-primary mt-3';
@@ -282,6 +297,7 @@
   listenToProductChanges();
   checkUserAuthentication();
 </script>
+
 
 
 
