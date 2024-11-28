@@ -6,6 +6,36 @@
   <title>Detalhes do Produto</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    .product-container {
+      margin: 20px auto;
+      max-width: 600px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .product-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .product-info {
+      margin-top: 20px;
+    }
+    .product-info h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+    .product-info p {
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    .price {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2d6a4f;
+    }
     .header {
       display: flex;
       align-items: center;
@@ -70,9 +100,12 @@
 
     <!-- Detalhes do Produto -->
     <div class="product-container">
-      <h2 id="productName">Nome do Produto</h2>
-      <p id="productDescription">Descrição do produto aparecerá aqui.</p>
-      <p class="price" id="productPrice">R$ 0,00</p>
+      <img id="productImage" class="product-image" src="https://via.placeholder.com/600x300" alt="Imagem do Produto">
+      <div class="product-info">
+        <h2 id="productName">Nome do Produto</h2>
+        <p id="productDescription">Descrição do produto aparecerá aqui.</p>
+        <p class="price" id="productPrice">R$ 0,00</p>
+      </div>
     </div>
 
     <!-- Botão do WhatsApp -->
@@ -84,7 +117,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
-    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
+    import { getFirestore, doc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
 
     // Configuração Firebase
     const firebaseConfig = {
@@ -121,11 +154,12 @@
       if (productSnap.exists()) {
         const productData = productSnap.data()
         const whatsappButton = document.getElementById('whatsappButton')
-        const whatsappNumber = productData.whatsapp ? `55${productData.whatsapp}` : ''
+        const whatsappNumber = producerSnap.data().whatsapp ? `55${producerSnap.data().whatsapp}` : ''
 
         document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
         document.getElementById('productDescription').textContent = productData.description || 'Sem descrição.'
         document.getElementById('productPrice').textContent = productData.price || 'Preço não informado.'
+        document.getElementById('productImage').src = productData.imageURL || 'https://via.placeholder.com/600x300'
 
         if (whatsappNumber) {
           whatsappButton.href = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Olá,%20gostaria%20de%20pedir%20%0A%0A*${encodeURIComponent(productData.name)}*%20%0A%0A_${encodeURIComponent(productData.description)}_%20%0A%0A*${encodeURIComponent(productData.price)}*%20.%0A%0Aobrigado!`
