@@ -36,14 +36,50 @@
       font-weight: bold;
       color: #2d6a4f;
     }
-    .seller-info {
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .header-info {
+      font-size: 0.9rem;
+    }
+    .whatsapp-button {
+      display: block;
+      width: 100%;
+      text-align: center;
       margin-top: 20px;
+      padding: 10px;
+      background-color: #25d366;
+      color: white;
       font-size: 1rem;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+    .whatsapp-button:hover {
+      background-color: #1da955;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- Cabeçalho com foto e informações do expositor -->
+    <div class="header">
+      <img id="sellerLogo" src="https://via.placeholder.com/50" alt="Logo do Expositor">
+      <div class="header-info">
+        <p id="sellerName" class="fw-bold">Nome do Expositor</p>
+        <p id="sellerCategory">Categoria do Expositor</p>
+      </div>
+    </div>
+
+    <!-- Detalhes do Produto -->
     <div class="product-container">
       <img id="productImage" class="product-image" src="https://via.placeholder.com/600x300" alt="Imagem do Produto">
       <div class="product-info">
@@ -51,11 +87,12 @@
         <p id="productDescription">Descrição do produto aparecerá aqui.</p>
         <p class="price" id="productPrice">R$ 0,00</p>
       </div>
-      <div class="seller-info">
-        <p id="sellerName">Vendedor: Nome do Vendedor</p>
-        <p id="sellerDescription">Descrição do vendedor.</p>
-      </div>
     </div>
+
+    <!-- Botão do WhatsApp -->
+    <a id="whatsappButton" class="whatsapp-button" href="#" target="_blank">
+      Falar no WhatsApp
+    </a>
   </div>
 
   <script type="module">
@@ -88,37 +125,41 @@
     }
 
     // Função para carregar os dados do produto
-    function loadProduct(productId, producerUid) {
+    async function loadProduct(productId, producerUid) {
       const productRef = doc(db, 'users', producerUid, 'products', productId)
+      const productSnap = await getDoc(productRef)
 
-      // Monitorar mudanças em tempo real no produto
-      onSnapshot(productRef, (productSnap) => {
-        if (productSnap.exists()) {
-          const productData = productSnap.data()
-          document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
-          document.getElementById('productDescription').textContent = productData.description || 'Sem descrição.'
-          document.getElementById('productPrice').textContent = productData.price || 'Preço não informado.'
-          document.getElementById('productImage').src = productData.imageURL || 'https://via.placeholder.com/600x300'
-        } else {
-          alert('Produto não encontrado.')
-        }
-      })
+      if (productSnap.exists()) {
+        const productData = productSnap.data()
+        document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
+        document.getElementById('productDescription').textContent = productData.description || 'Sem descrição.'
+        document.getElementById('productPrice').textContent = productData.price || 'Preço não informado.'
+        document.getElementById('productImage').src = productData.imageURL || 'https://via.placeholder.com/600x300'
+
+        const whatsappButton = document.getElementById('whatsappButton')
+        const whatsappNumber = productData.whatsapp ? `55${productData.whatsapp}` : ''
+        whatsappButton.href = whatsappNumber
+          ? `https://wa.me/${whatsappNumber}?text=Olá,%20gostaria%20de%20saber%20sobre%20o%20produto:%20${encodeURIComponent(productData.name)}`
+          : '#'
+        whatsappButton.textContent = whatsappNumber ? 'Falar no WhatsApp' : 'WhatsApp não disponível'
+      } else {
+        alert('Produto não encontrado.')
+      }
     }
 
     // Função para carregar os dados do produtor
-    function loadProducer(producerUid) {
+    async function loadProducer(producerUid) {
       const producerRef = doc(db, 'users', producerUid)
+      const producerSnap = await getDoc(producerRef)
 
-      // Monitorar mudanças em tempo real no expositor
-      onSnapshot(producerRef, (producerSnap) => {
-        if (producerSnap.exists()) {
-          const producerData = producerSnap.data()
-          document.getElementById('sellerName').textContent = `Vendedor: ${producerData.name || 'Nome do Vendedor'}`
-          document.getElementById('sellerDescription').textContent = producerData.description || 'Sem descrição.'
-        } else {
-          alert('Produtor não encontrado.')
-        }
-      })
+      if (producerSnap.exists()) {
+        const producerData = producerSnap.data()
+        document.getElementById('sellerLogo').src = producerData.logoURL || 'https://via.placeholder.com/50'
+        document.getElementById('sellerName').textContent = producerData.name || 'Nome do Expositor'
+        document.getElementById('sellerCategory').textContent = producerData.category || 'Categoria não informada'
+      } else {
+        alert('Produtor não encontrado.')
+      }
     }
 
     // Carregar o produto e o produtor
