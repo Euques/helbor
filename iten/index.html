@@ -9,11 +9,10 @@
     .header {
       display: flex;
       align-items: center;
-      background-color: #f8f9fa;
       padding: 15px;
       border-radius: 8px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
     }
     .header img {
       width: 60px;
@@ -21,7 +20,6 @@
       border-radius: 50%;
       object-fit: cover;
       margin-right: 15px;
-      border: 2px solid #2d6a4f;
     }
     .header-info {
       font-size: 0.9rem;
@@ -33,36 +31,6 @@
     }
     .header-info .category {
       color: #6c757d;
-    }
-    .product-container {
-      margin: 20px auto;
-      max-width: 600px;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .product-image {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    .product-info {
-      margin-top: 20px;
-    }
-    .product-info h2 {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-    }
-    .product-info p {
-      font-size: 1rem;
-      margin-bottom: 10px;
-    }
-    .price {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #2d6a4f;
     }
     .whatsapp-button {
       display: flex;
@@ -102,18 +70,15 @@
 
     <!-- Detalhes do Produto -->
     <div class="product-container">
-      <img id="productImage" class="product-image" src="https://via.placeholder.com/600x300" alt="Imagem do Produto">
-      <div class="product-info">
-        <h2 id="productName">Nome do Produto</h2>
-        <p id="productDescription">Descrição do produto aparecerá aqui.</p>
-        <p class="price" id="productPrice">R$ 0,00</p>
-      </div>
+      <h2 id="productName">Nome do Produto</h2>
+      <p id="productDescription">Descrição do produto aparecerá aqui.</p>
+      <p class="price" id="productPrice">R$ 0,00</p>
     </div>
 
     <!-- Botão do WhatsApp -->
     <a id="whatsappButton" class="whatsapp-button" href="#" target="_blank">
       <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-      Falar no WhatsApp
+      Encomendar
     </a>
   </div>
 
@@ -155,17 +120,19 @@
 
       if (productSnap.exists()) {
         const productData = productSnap.data()
+        const whatsappButton = document.getElementById('whatsappButton')
+        const whatsappNumber = productData.whatsapp ? `55${productData.whatsapp}` : ''
+
         document.getElementById('productName').textContent = productData.name || 'Nome não disponível'
         document.getElementById('productDescription').textContent = productData.description || 'Sem descrição.'
         document.getElementById('productPrice').textContent = productData.price || 'Preço não informado.'
-        document.getElementById('productImage').src = productData.imageURL || 'https://via.placeholder.com/600x300'
 
-        const whatsappButton = document.getElementById('whatsappButton')
-        const whatsappNumber = productData.whatsapp ? `55${productData.whatsapp}` : ''
-        whatsappButton.href = whatsappNumber
-          ? `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=%F0%9F%98%83%20oi,%20gostaria%20de%20saber%20mais%20sobre%20${encodeURIComponent(productData.name)}.%20Preço:%20${encodeURIComponent(productData.price)}.%20Descrição:%20${encodeURIComponent(productData.description)}`
-          : '#'
-        whatsappButton.textContent = whatsappNumber ? 'Falar no WhatsApp' : 'WhatsApp não disponível'
+        if (whatsappNumber) {
+          whatsappButton.href = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=Olá,%20gostaria%20de%20pedir%20%0A%0A*${encodeURIComponent(productData.name)}*%20%0A%0A_${encodeURIComponent(productData.description)}_%20%0A%0A*${encodeURIComponent(productData.price)}*%20.%0A%0Aobrigado!`
+        } else {
+          whatsappButton.href = '#'
+          whatsappButton.textContent = 'WhatsApp não disponível'
+        }
       } else {
         alert('Produto não encontrado.')
       }
