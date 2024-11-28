@@ -6,6 +6,34 @@
   <title>Detalhes do Produto</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    .header {
+      display: flex;
+      align-items: center;
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .header img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 15px;
+      border: 2px solid #2d6a4f;
+    }
+    .header-info {
+      font-size: 0.9rem;
+    }
+    .header-info .name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .header-info .category {
+      color: #6c757d;
+    }
     .product-container {
       margin: 20px auto;
       max-width: 600px;
@@ -36,35 +64,28 @@
       font-weight: bold;
       color: #2d6a4f;
     }
-    .header {
+    .whatsapp-button {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
-    }
-    .header img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-    .header-info {
-      font-size: 0.9rem;
-    }
-    .whatsapp-button {
-      display: block;
-      width: 100%;
-      text-align: center;
+      justify-content: center;
+      gap: 10px;
       margin-top: 20px;
-      padding: 10px;
+      padding: 12px 15px;
       background-color: #25d366;
       color: white;
       font-size: 1rem;
       font-weight: bold;
       text-decoration: none;
       border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease;
     }
     .whatsapp-button:hover {
       background-color: #1da955;
+    }
+    .whatsapp-button img {
+      width: 24px;
+      height: 24px;
     }
   </style>
 </head>
@@ -72,10 +93,10 @@
   <div class="container">
     <!-- Cabeçalho com foto e informações do expositor -->
     <div class="header">
-      <img id="sellerLogo" src="https://via.placeholder.com/50" alt="Logo do Expositor">
+      <img id="sellerLogo" src="https://via.placeholder.com/60" alt="Logo do Expositor">
       <div class="header-info">
-        <p id="sellerName" class="fw-bold">Nome do Expositor</p>
-        <p id="sellerCategory">Categoria do Expositor</p>
+        <p id="sellerName" class="name">Nome do Expositor</p>
+        <p id="sellerCategory" class="category">Categoria do Expositor</p>
       </div>
     </div>
 
@@ -91,13 +112,14 @@
 
     <!-- Botão do WhatsApp -->
     <a id="whatsappButton" class="whatsapp-button" href="#" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
       Falar no WhatsApp
     </a>
   </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'
-    import { getFirestore, doc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
+    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js'
 
     // Configuração Firebase
     const firebaseConfig = {
@@ -124,10 +146,12 @@
       throw new Error('ID do produto ou UID do produtor não encontrado.')
     }
 
-    // Função para carregar os dados do produto
-    async function loadProduct(productId, producerUid) {
+    // Função para carregar os dados do produto e produtor
+    async function loadData(productId, producerUid) {
       const productRef = doc(db, 'users', producerUid, 'products', productId)
-      const productSnap = await getDoc(productRef)
+      const producerRef = doc(db, 'users', producerUid)
+
+      const [productSnap, producerSnap] = await Promise.all([getDoc(productRef), getDoc(producerRef)])
 
       if (productSnap.exists()) {
         const productData = productSnap.data()
@@ -139,22 +163,16 @@
         const whatsappButton = document.getElementById('whatsappButton')
         const whatsappNumber = productData.whatsapp ? `55${productData.whatsapp}` : ''
         whatsappButton.href = whatsappNumber
-          ? `https://wa.me/${whatsappNumber}?text=Olá,%20gostaria%20de%20saber%20sobre%20o%20produto:%20${encodeURIComponent(productData.name)}`
+          ? `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=%F0%9F%98%83%20oi,%20gostaria%20de%20saber%20mais%20sobre%20${encodeURIComponent(productData.name)}.%20Preço:%20${encodeURIComponent(productData.price)}.%20Descrição:%20${encodeURIComponent(productData.description)}`
           : '#'
         whatsappButton.textContent = whatsappNumber ? 'Falar no WhatsApp' : 'WhatsApp não disponível'
       } else {
         alert('Produto não encontrado.')
       }
-    }
-
-    // Função para carregar os dados do produtor
-    async function loadProducer(producerUid) {
-      const producerRef = doc(db, 'users', producerUid)
-      const producerSnap = await getDoc(producerRef)
 
       if (producerSnap.exists()) {
         const producerData = producerSnap.data()
-        document.getElementById('sellerLogo').src = producerData.logoURL || 'https://via.placeholder.com/50'
+        document.getElementById('sellerLogo').src = producerData.logoURL || 'https://via.placeholder.com/60'
         document.getElementById('sellerName').textContent = producerData.name || 'Nome do Expositor'
         document.getElementById('sellerCategory').textContent = producerData.category || 'Categoria não informada'
       } else {
@@ -162,9 +180,7 @@
       }
     }
 
-    // Carregar o produto e o produtor
-    loadProduct(productId, producerUid)
-    loadProducer(producerUid)
+    loadData(productId, producerUid)
   </script>
 </body>
 </html>
