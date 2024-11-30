@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const contentDiv = document.getElementById("content");
 
-    // Função para carregar páginas dinâmicas
     function loadPage(page) {
         fetch(`${page}.html`)
             .then(response => {
@@ -10,6 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(html => {
                 contentDiv.innerHTML = html;
+
+                // Carregar JS específico da página de contato
+                if (page === "contato") {
+                    const script = document.createElement("script");
+                    script.src = "contato.js";
+                    document.body.appendChild(script);
+                }
             })
             .catch(error => {
                 contentDiv.innerHTML = "<p>Erro ao carregar a página.</p>";
@@ -20,10 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Carregar a página inicial
     loadPage("home");
 
-    // Adicionar eventos aos links do menu
+    // Eventos de navegação
     document.querySelectorAll("nav a").forEach(link => {
         link.addEventListener("click", event => {
-            event.preventDefault(); // Impede o recarregamento da página
+            event.preventDefault();
             const page = event.target.getAttribute("data-page");
             loadPage(page);
         });
