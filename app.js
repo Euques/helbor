@@ -11,9 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 contentDiv.innerHTML = html;
 
                 // Carregar JS específico da página de contato
-                if (page === "contato") {
+                if (page === "home") {
                     const script = document.createElement("script");
-                    script.src = "contato.js";
+                    script.src = "home.js";
                     document.body.appendChild(script);
                 }
             })
