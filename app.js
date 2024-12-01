@@ -1,13 +1,22 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.getElementById('menu-toggle');
+    const sideMenu = document.getElementById('side-menu');
+
+    // Alternar menu
+    menuToggle.addEventListener('click', () => {
+        sideMenu.classList.toggle('show');
+    });
+
+    // Fechar o menu ao clicar em um link
+    sideMenu.addEventListener('click', (event) => {
+        if (event.target.tagName === 'A') {
+            sideMenu.classList.remove('show');
+        }
+    });
+});
+
 // Função para carregar o conteúdo no iframe
 function loadContent(page) {
     const iframe = document.getElementById('content-frame');
     iframe.src = page;
-
-    // Fecha o menu se estiver aberto
-    const navbar = document.querySelector('.navbar-collapse');
-    if (navbar.classList.contains('show')) {
-        const bsCollapse = new bootstrap.Collapse(navbar, {
-            toggle: true
-        });
-    }
 }
