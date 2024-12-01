@@ -19,7 +19,7 @@
     }
     .card {
       width: 100%;
-      max-width: 400px;
+      max-width: 360px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
@@ -123,11 +123,11 @@
         let result;
         if (isLoginMode) {
           result = await signInWithEmailAndPassword(auth, email, password);
-          window.location.href = `/exp/?ex=${result.user.uid}`;
+          window.location.href = `?cont=/exp/?ex=${result.user.uid}`;
         } else {
           result = await createUserWithEmailAndPassword(auth, email, password);
           await setDoc(doc(db, 'users', result.user.uid), { email });
-          window.location.href = `/user/?u=${result.user.uid}`;
+          window.location.href = `?cont=/user/?u=${result.user.uid}`;
         }
       } catch (error) {
         statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
@@ -149,9 +149,9 @@
             displayName: user.displayName,
             photoURL: user.photoURL
           });
-          window.location.href = `/user/?u=${user.uid}`;
+          window.location.href = `?cont=/user/?u=${user.uid}`;
         } else {
-          window.location.href = `/exp/?ex=${user.uid}`;
+          window.location.href = `?cont=/exp/?ex=${user.uid}`;
         }
       } catch (error) {
         statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
