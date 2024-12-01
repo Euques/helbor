@@ -3,38 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Site</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Página Dinâmica</title>
 </head>
 <body>
-    <header>
-        <h1>Bem-vindo ao Meu Site</h1>
-        <nav>
-            <ul>
-                <li><a href="#" data-page="home">Home</a></li>
-                <li><a href="#" data-page="sobre">Sobre</a></li>
-                <li><a href="#" data-page="contato">Contato</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main id="content">
-        <p>Carregando...</p>
-    </main>
+    <!-- Menu -->
+    <nav id="menu">
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#contato">Contato</a></li>
+        </ul>
+    </nav>
 
-    <footer>
-        <p>© 2024 Meu Site. Todos os direitos reservados.</p>
-    </footer>
+    <!-- Área de conteúdo -->
+    <section id="content">
+        <!-- O conteúdo dinâmico será carregado aqui -->
+    </section>
 
-    <script src="app.js"></script>
+    <script type="module">
+        // Função para carregar o conteúdo e o script da página dinamicamente
+        async function loadPage(page) {
+            const section = document.getElementById('content');
+            try {
+                // Carregar o conteúdo HTML da página
+                const response = await fetch(`${page}.html`);
+                if (!response.ok) throw new Error('Página não encontrada');
+                const content = await response.text();
 
-        <!-- Bootstrap JS -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
-    ></script>
-    
+                // Inserir o conteúdo na seção
+                section.innerHTML = content;
+
+                // Carregar o script correspondente da página (home.js, contato.js, etc.)
+                const script = document.createElement('script');
+                script.src = `${page}.js`;
+                script.type = 'module'; // Se for um módulo, usar type="module"
+                script.onload = () => {
+                    console.log(`${page}.js carregado com sucesso!`);
+                };
+                document.body.appendChild(script);
+
+            } catch (error) {
+                section.innerHTML = '<p class="text-danger text-center">Página não encontrada.</p>';
+                console.error(error);
+            }
+        }
+
+        // Adicionar eventos de navegação para o menu
+        function setupMenu() {
+            const menuLinks = document.querySelectorAll('#menu a');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = e.target.getAttribute('href').substring(1); // Pega o nome da página
+                    loadPage(page); // Chama a função para carregar a página
+                });
+            });
+        }
+
+        // Inicializa o menu e carrega a primeira página (home)
+        setupMenu();
+        loadPage('home'); // Carregar a página inicial, home.html
+    </script>
+
 </body>
 </html>
