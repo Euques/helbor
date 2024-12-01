@@ -15,38 +15,34 @@
 <body class="d-flex flex-column min-vh-100">
 
     <!-- Navbar Moderna -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#">
-                <i class="fas fa-store"></i> <!-- Ícone de feira -->
-                Feirinha
+    <nav class="navbar navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center fw-bold" href="#">
+                <i class="fas fa-store me-2"></i> Feirinha
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Botão Menu Sanduíche -->
+            <button class="navbar-toggler border-0" type="button" id="menu-toggle">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-light" href="#" onclick="loadContent('home.html')">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light" href="#" onclick="loadContent('login.html')">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light" href="#" onclick="loadContent('locais.html')">Locais</a>
-                    </li>
-                </ul>
-            </div>
         </div>
     </nav>
+
+    <!-- Menu Lateral -->
+    <div id="side-menu" class="side-menu bg-white shadow-lg">
+        <ul class="list-unstyled p-3">
+            <li class="mb-3"><a href="#" class="text-dark fw-bold" onclick="loadContent('home.html')">Home</a></li>
+            <li class="mb-3"><a href="#" class="text-dark fw-bold" onclick="loadContent('login.html')">Login</a></li>
+            <li><a href="#" class="text-dark fw-bold" onclick="loadContent('locais.html')">Locais</a></li>
+        </ul>
+    </div>
 
     <!-- Conteúdo Principal -->
     <main class="flex-grow-1 position-relative">
         <iframe id="content-frame" class="content-frame" src="home.html"></iframe>
     </main>
 
-    <!-- Rodapé Moderno -->
-    <footer class="footer bg-primary text-light text-center py-3 mt-auto shadow">
+    <!-- Rodapé -->
+    <footer class="footer text-center py-3 bg-white shadow-sm">
         <p class="mb-0">&copy; 2024 WABES - Todos os direitos reservados</p>
     </footer>
 
