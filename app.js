@@ -1,32 +1,23 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const contentDiv = document.getElementById("content");
+async function loadPage(page) {
+  const section = document.querySelector('section');
 
-    function loadPage(page) {
-        fetch(`${page}.html`)
-            .then(response => {
-                if (!response.ok) throw new Error("Página não encontrada");
-                return response.text();
-            })
-            .then(html => {
-                contentDiv.innerHTML = html;
+  try {
+    const response = await fetch(`${page}.html`);
+    if (!response.ok) throw new Error('Página não encontrada');
+    const content = await response.text();
 
-            
-            })
-            .catch(error => {
-                contentDiv.innerHTML = "<p>Erro ao carregar a página.</p>";
-                console.error(error);
-            });
+    // Insere o conteúdo na página
+    section.innerHTML = content;
+
+    // Carrega o script correspondente
+    if (page === 'home') {
+      const script = document.createElement('script');
+      script.src = 'home.js'; // Caminho para o script da página
+      script.type = 'module'; // Se for usar imports/export
+      document.body.appendChild(script);
     }
-
-    // Carregar a página inicial
-    loadPage("home");
-
-    // Eventos de navegação
-    document.querySelectorAll("nav a").forEach(link => {
-        link.addEventListener("click", event => {
-            event.preventDefault();
-            const page = event.target.getAttribute("data-page");
-            loadPage(page);
-        });
-    });
-});
+  } catch (error) {
+    section.innerHTML = '<p class="text-danger text-center">Página não encontrada.</p>';
+    console.error(error);
+  }
+}
