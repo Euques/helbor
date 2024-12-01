@@ -23,18 +23,30 @@
         </div>
     </nav>
 
-    <!-- Menu Lateral (Inicialmente escondido) -->
-    <div id="side-menu" class="side-menu bg-white shadow-lg d-none position-fixed top-0 start-0 h-100 p-3">
+    <!-- Menu Lateral -->
+    <div id="side-menu" class="side-menu bg-white shadow-lg d-none position-fixed top-0 end-0 h-100 p-3">
         <ul class="list-unstyled">
-            <li class="mb-3"><a href="#" class="text-dark fw-bold" onclick="loadContent('home.html')"><i class="fas fa-home me-2"></i> Home <i class="fas fa-chevron-right float-end"></i></a></li>
-            <li class="mb-3"><a href="#" class="text-dark fw-bold" onclick="loadContent('?cont=login.html')"><i class="fas fa-sign-in-alt me-2"></i> Login <i class="fas fa-chevron-right float-end"></i></a></li>
-            <li><a href="#" class="text-dark fw-bold" onclick="loadContent('locais.html')"><i class="fas fa-map-marker-alt me-2"></i> Locais <i class="fas fa-chevron-right float-end"></i></a></li>
+            <li class="mb-3">
+                <a href="#" class="text-dark fw-bold" onclick="loadContent('home.html')">
+                    <i class="fas fa-home me-2"></i> Home <i class="fas fa-chevron-right float-end"></i>
+                </a>
+            </li>
+            <li class="mb-3">
+                <a href="#" class="text-dark fw-bold" onclick="loadContent('login.html')">
+                    <i class="fas fa-sign-in-alt me-2"></i> Login <i class="fas fa-chevron-right float-end"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="text-dark fw-bold" onclick="loadContent('locais.html')">
+                    <i class="fas fa-map-marker-alt me-2"></i> Locais <i class="fas fa-chevron-right float-end"></i>
+                </a>
+            </li>
         </ul>
     </div>
 
     <!-- Conteúdo Principal -->
     <main class="flex-grow-1 position-relative">
-        <iframe id="content-frame" class="content-frame w-100" src=""></iframe>
+        <iframe id="content-frame" class="content-frame w-100 h-100 border-0" src=""></iframe>
     </main>
 
     <!-- Rodapé -->
@@ -55,15 +67,24 @@
         function loadIframeContent() {
             const cont = getCont(); // Pega a variável cont da URL
             const iframe = document.getElementById('content-frame'); // Seleciona o iframe
-            const baseUrl = 'https://helbor.netlify.app'; // Defina a URL base
-            
+            const baseUrl = 'https://helbor.netlify.app'; // URL base
+
             if (cont) {
-                // Verifica se o cont é uma URL relativa e junta com a URL base
                 const fullUrl = cont.startsWith('/') ? baseUrl + cont : cont;
                 iframe.src = fullUrl; // Altera o src do iframe
             } else {
                 iframe.src = 'home.html'; // Caso não tenha a variável cont, carrega a página home.html
             }
+        }
+
+        // Função para carregar conteúdo no iframe
+        function loadContent(url) {
+            const iframe = document.getElementById('content-frame');
+            iframe.src = url;
+            
+            // Esconde o menu após clique
+            const sideMenu = document.getElementById('side-menu');
+            sideMenu.classList.add('d-none');
         }
 
         // Carregar o conteúdo quando a página carregar
