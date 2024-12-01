@@ -10,12 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(html => {
                 contentDiv.innerHTML = html;
 
-                // Carregar JS específico da página de contato
-                if (page === "home") {
-                    const script = document.createElement("script");
-                    script.src = "home.js";
-                    document.body.appendChild(script);
-                }
+            
             })
             .catch(error => {
                 contentDiv.innerHTML = "<p>Erro ao carregar a página.</p>";
