@@ -23,8 +23,8 @@
         </div>
     </nav>
 
-    <!-- Menu Lateral -->
-    <div id="side-menu" class="side-menu bg-white shadow-lg">
+    <!-- Menu Lateral (Inicialmente escondido) -->
+    <div id="side-menu" class="side-menu bg-white shadow-lg d-none">
         <ul class="list-unstyled p-3">
             <li class="mb-3"><a href="#" class="text-dark fw-bold" onclick="loadContent('home.html')"><i class="fas fa-home me-2"></i> Home <i class="fas fa-chevron-right float-end"></i></a></li>
             <li class="mb-3"><a href="#" class="text-dark fw-bold" onclick="loadContent('login.html')"><i class="fas fa-sign-in-alt me-2"></i> Login <i class="fas fa-chevron-right float-end"></i></a></li>
@@ -34,7 +34,7 @@
 
     <!-- Conteúdo Principal -->
     <main class="flex-grow-1 position-relative">
-        <iframe id="content-frame" class="content-frame" src=""></iframe>
+        <iframe id="content-frame" class="content-frame w-100" src=""></iframe>
     </main>
 
     <!-- Rodapé -->
@@ -72,8 +72,10 @@
         // Função para abrir o menu
         const menuToggle = document.getElementById('menu-toggle');
         const sideMenu = document.getElementById('side-menu');
-        menuToggle.addEventListener('click', () => {
-            sideMenu.classList.toggle('d-none'); // Alterna a visibilidade do menu
+        
+        // Evento para alternar visibilidade do menu
+        menuToggle.addEventListener('click', function() {
+            sideMenu.classList.toggle('d-none'); // Alterna entre mostrar e esconder o menu
         });
     </script>
 </body>
