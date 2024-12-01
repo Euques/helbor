@@ -1,4 +1,4 @@
-// Script para controlar o menu sanduíche
+// Função para abrir e fechar o menu
 document.getElementById('menu-toggle').addEventListener('click', function() {
     var menu = document.getElementById('menu');
     // Toggle para abrir e fechar o menu
@@ -12,4 +12,7 @@ document.getElementById('menu-toggle').addEventListener('click', function() {
 // Função para carregar o conteúdo no iframe
 function loadContent(page) {
     document.getElementById('content-frame').src = page;
+    // Fecha o menu após a seleção
+    var menu = document.getElementById('menu');
+    menu.style.transform = 'translateX(-250px)';
 }
