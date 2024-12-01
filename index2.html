@@ -68,6 +68,13 @@
 
         // Carregar o conteúdo quando a página carregar
         window.onload = loadIframeContent;
+
+        // Função para abrir o menu
+        const menuToggle = document.getElementById('menu-toggle');
+        const sideMenu = document.getElementById('side-menu');
+        menuToggle.addEventListener('click', () => {
+            sideMenu.classList.toggle('d-none'); // Alterna a visibilidade do menu
+        });
     </script>
 </body>
 </html>
