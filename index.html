@@ -3,69 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Dinâmica</title>
+    <title>Página com Menu Sanduíche</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Menu de navegação (Menu Sanduíche) -->
+    <div id="menu-toggle" class="menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
 
-    <!-- Menu -->
-    <nav id="menu">
+    <div id="menu" class="menu">
         <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#contato">Contato</a></li>
-            <li><a href="#login">login</a></li>
+            <li><a href="#" onclick="loadContent('home.html')">Home</a></li>
+            <li><a href="#" onclick="loadContent('login.html')">login</a></li>
+          
         </ul>
-    </nav>
+    </div>
 
-    <!-- Área de conteúdo -->
-    <section id="content">
-        <!-- O conteúdo dinâmico será carregado aqui -->
-    </section>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <h1>Bem-vindo ao Nosso Aplicativo</h1>
+    </header>
 
-    <script type="module">
-        // Função para carregar o conteúdo da página dinamicamente
-        async function loadPage(page) {
-            const section = document.getElementById('content');
-            try {
-                // Carregar o conteúdo HTML da página (home.html, etc.)
-                const response = await fetch(`${page}.html`);
-                if (!response.ok) throw new Error('Página não encontrada');
-                const content = await response.text();
+    <!-- Iframe para mostrar conteúdo -->
+    <iframe id="content-frame" class="content-frame" src="home.html"></iframe>
 
-                // Inserir o conteúdo na seção
-                section.innerHTML = content;
+    <!-- Rodapé -->
+    <footer class="footer">
+        <p>&copy; 2024 WABES - Todos os direitos reservados</p>
+    </footer>
 
-                // Aguarda o conteúdo ser inserido no DOM para rodar o script
-                setTimeout(() => {
-                    const script = document.createElement('script');
-                    script.type = 'module'; // se for um módulo
-                    script.innerHTML = `
-                        import './${page}.js';
-                    `;
-                    document.body.appendChild(script);
-                }, 100); // Pequeno atraso para garantir que o conteúdo foi inserido
-
-            } catch (error) {
-                section.innerHTML = '<p class="text-danger text-center">Página não encontrada.</p>';
-                console.error(error);
-            }
-        }
-
-        // Adicionar eventos de navegação para o menu
-        function setupMenu() {
-            const menuLinks = document.querySelectorAll('#menu a');
-            menuLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const page = e.target.getAttribute('href').substring(1); // Pega o nome da página
-                    loadPage(page); // Chama a função para carregar a página
-                });
-            });
-        }
-
-        // Inicializa o menu e carrega a primeira página (home)
-        setupMenu();
-        loadPage('home'); // Carregar a página inicial, home.html
-    </script>
-
+    <script src="app.js"></script>
 </body>
 </html>
