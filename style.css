@@ -15,7 +15,7 @@ body {
 .side-menu {
     position: fixed;
     top: 56px; /* Abaixo da navbar */
-    left: -250px;
+    right: -250px;
     width: 250px;
     height: calc(100vh - 56px);
     background-color: #ffffff;
@@ -25,7 +25,7 @@ body {
 }
 
 .side-menu.show {
-    left: 0;
+    right: 0;
 }
 
 .side-menu ul {
@@ -36,11 +36,21 @@ body {
 .side-menu li a {
     font-size: 1rem;
     text-decoration: none;
+    color: #212529;
     transition: color 0.3s ease;
 }
 
 .side-menu li a:hover {
     color: #007bff;
+}
+
+.side-menu i.fas {
+    font-size: 1.2rem;
+}
+
+/* Ícone Chevron */
+.side-menu li a i.fas.fa-chevron-right {
+    font-size: 1.2rem;
 }
 
 /* Iframe */
@@ -56,4 +66,10 @@ body {
 .footer {
     font-size: 0.9rem;
     color: #6c757d;
+    background-color: #ffffff; /* Rodapé branco */
+}
+
+/* Estilo para o botão de alternar menu */
+.navbar-toggler {
+    border: none;
 }
