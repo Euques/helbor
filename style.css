@@ -1,32 +1,59 @@
-/* Tipografia moderna */
+/* Tipografia e layout */
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f8f9fa;
     color: #212529;
+    padding-top: 56px; /* Espaço para navbar fixa */
 }
 
-/* Navbar estilizada */
-.navbar {
-    background-color: #007BFF; /* Azul moderno */
-}
-
-.navbar-brand {
+.navbar-brand i {
+    color: #007bff; /* Azul do ícone */
     font-size: 1.5rem;
-    font-weight: 700;
 }
 
-/* Iframe responsivo */
+/* Menu Lateral */
+.side-menu {
+    position: fixed;
+    top: 56px; /* Abaixo da navbar */
+    left: -250px;
+    width: 250px;
+    height: calc(100vh - 56px);
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+    z-index: 1050;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.side-menu.show {
+    left: 0;
+}
+
+.side-menu ul {
+    padding: 0;
+    margin: 0;
+}
+
+.side-menu li a {
+    font-size: 1rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.side-menu li a:hover {
+    color: #007bff;
+}
+
+/* Iframe */
 .content-frame {
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 56px); /* Ocupa a tela inteira menos o header */
     border: none;
-    background-color: #ffffff; /* Fundo branco para clareza */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Rodapé */
 .footer {
-    background-color: #0056b3; /* Azul mais escuro para contraste */
-    color: white;
     font-size: 0.9rem;
+    color: #6c757d;
 }
