@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <!-- Menu de navegação (Menu Sanduíche) -->
     <div id="menu-toggle" class="menu-toggle">
         <span></span>
@@ -17,22 +18,24 @@
     <div id="menu" class="menu">
         <ul>
             <li><a href="#" onclick="loadContent('home.html')">Home</a></li>
-            <li><a href="#" onclick="loadContent('login.html')">login</a></li>
-          
+            <li><a href="#" onclick="loadContent('login.html')">Login</a></li>
+            <li><a href="#" onclick="loadContent('locais.html')">Locais</a></li>
         </ul>
     </div>
 
     <!-- Cabeçalho -->
     <header class="header">
-        <h1>Bem-vindo ao Nosso Aplicativo</h1>
+        <h1>Aplicativo Profissional</h1>
     </header>
 
     <!-- Iframe para mostrar conteúdo -->
-    <iframe id="content-frame" class="content-frame" src="home.html"></iframe>
+    <main>
+        <iframe id="content-frame" class="content-frame" src="home.html"></iframe>
+    </main>
 
     <!-- Rodapé -->
     <footer class="footer">
-        <p>&copy; 2024 WABES - Todos os direitos reservados</p>
+        <p>&copy; 2024 Todos os direitos reservados</p>
     </footer>
 
     <script src="app.js"></script>
