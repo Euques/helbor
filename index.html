@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Dinâmica</title>
-    <!-- Aqui você pode incluir o CSS global se necessário -->
 </head>
 <body>
 
@@ -13,7 +12,6 @@
         <ul>
             <li><a href="#home">Home</a></li>
             <li><a href="#contato">Contato</a></li>
-            <li><a href="#login">login</a></li>
         </ul>
     </nav>
 
@@ -35,14 +33,15 @@
                 // Inserir o conteúdo na seção
                 section.innerHTML = content;
 
-                // Carregar o script correspondente da página (home.js, contato.js, etc.)
-                const script = document.createElement('script');
-                script.src = `${page}.js`; // Carregar o script correspondente
-                script.type = 'module'; // Se for um módulo, usar type="module"
-                script.onload = () => {
-                    console.log(`${page}.js carregado com sucesso!`);
-                };
-                document.body.appendChild(script);
+                // Aguarda o conteúdo ser inserido no DOM para rodar o script
+                setTimeout(() => {
+                    const script = document.createElement('script');
+                    script.type = 'module'; // se for um módulo
+                    script.innerHTML = `
+                        import './${page}.js';
+                    `;
+                    document.body.appendChild(script);
+                }, 100); // Pequeno atraso para garantir que o conteúdo foi inserido
 
             } catch (error) {
                 section.innerHTML = '<p class="text-danger text-center">Página não encontrada.</p>';
