@@ -6,27 +6,34 @@
     <title>Feirinha</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-    <!-- Navbar com Bootstrap -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
+    <!-- Navbar Moderna -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Feirinha</a>
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-store"></i> <!-- Ícone de feira -->
+                Feirinha
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="loadContent('home.html')">Home</a>
+                        <a class="nav-link text-light" href="#" onclick="loadContent('home.html')">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="loadContent('login.html')">Login</a>
+                        <a class="nav-link text-light" href="#" onclick="loadContent('login.html')">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="loadContent('locais.html')">Locais</a>
+                        <a class="nav-link text-light" href="#" onclick="loadContent('locais.html')">Locais</a>
                     </li>
                 </ul>
             </div>
@@ -34,13 +41,13 @@
     </nav>
 
     <!-- Conteúdo Principal -->
-    <main class="main-content">
+    <main class="flex-grow-1 position-relative">
         <iframe id="content-frame" class="content-frame" src="home.html"></iframe>
     </main>
 
-    <!-- Rodapé -->
-    <footer class="footer bg-light text-center py-3 shadow">
-        <p>&copy; 2024 WABES - Todos os direitos reservados</p>
+    <!-- Rodapé Moderno -->
+    <footer class="footer bg-primary text-light text-center py-3 mt-auto shadow">
+        <p class="mb-0">&copy; 2024 WABES - Todos os direitos reservados</p>
     </footer>
 
     <!-- Bootstrap JS -->
