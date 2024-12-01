@@ -27,17 +27,17 @@
     <div id="side-menu" class="side-menu bg-white shadow-lg d-none position-fixed top-0 end-0 h-100 p-3">
         <ul class="list-unstyled">
             <li class="mb-3">
-                <a href="#" class="text-dark fw-bold" onclick="loadContent('home.html')">
+                <a href="?cont=home.html" class="text-dark fw-bold">
                     <i class="fas fa-home me-2"></i> Home <i class="fas fa-chevron-right float-end"></i>
                 </a>
             </li>
             <li class="mb-3">
-                <a href="#" class="text-dark fw-bold" onclick="loadContent('?cont=login.html')">
+                <a href="?cont=login.html" class="text-dark fw-bold">
                     <i class="fas fa-sign-in-alt me-2"></i> Login <i class="fas fa-chevron-right float-end"></i>
                 </a>
             </li>
             <li>
-                <a href="#" class="text-dark fw-bold" onclick="loadContent('?cont=locais.html')">
+                <a href="?cont=locais.html" class="text-dark fw-bold">
                     <i class="fas fa-map-marker-alt me-2"></i> Locais <i class="fas fa-chevron-right float-end"></i>
                 </a>
             </li>
@@ -45,8 +45,8 @@
     </div>
 
     <!-- Conteúdo Principal -->
-    <main class="flex-grow-1 position-relative">
-        <iframe id="content-frame" class="content-frame w-100 h-100 border-0" src=""></iframe>
+    <main class="flex-grow-1">
+        <iframe id="content-frame" class="w-100 border-0" src="" style="height: calc(100vh - 56px);"></iframe>
     </main>
 
     <!-- Rodapé -->
@@ -67,24 +67,12 @@
         function loadIframeContent() {
             const cont = getCont(); // Pega a variável cont da URL
             const iframe = document.getElementById('content-frame'); // Seleciona o iframe
-            const baseUrl = 'https://helbor.netlify.app'; // URL base
 
             if (cont) {
-                const fullUrl = cont.startsWith('/') ? baseUrl + cont : cont;
-                iframe.src = fullUrl; // Altera o src do iframe
+                iframe.src = cont; // Altera o src do iframe com o valor de cont
             } else {
                 iframe.src = 'home.html'; // Caso não tenha a variável cont, carrega a página home.html
             }
-        }
-
-        // Função para carregar conteúdo no iframe
-        function loadContent(url) {
-            const iframe = document.getElementById('content-frame');
-            iframe.src = url;
-            
-            // Esconde o menu após clique
-            const sideMenu = document.getElementById('side-menu');
-            sideMenu.classList.add('d-none');
         }
 
         // Carregar o conteúdo quando a página carregar
@@ -93,7 +81,7 @@
         // Função para abrir o menu
         const menuToggle = document.getElementById('menu-toggle');
         const sideMenu = document.getElementById('side-menu');
-        
+
         // Evento para alternar visibilidade do menu
         menuToggle.addEventListener('click', function() {
             sideMenu.classList.toggle('d-none'); // Alterna entre mostrar e esconder o menu
