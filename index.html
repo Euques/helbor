@@ -8,16 +8,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <style>
+<style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             font-family: 'Roboto', sans-serif;
-
-              
-    margin-top: 1rem;
- 
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa; /* Cor de fundo */
         }
         .navbar {
             height: 56px;
@@ -31,15 +30,63 @@
         }
         iframe {
             width: 100%;
-            height: calc(100vh - 56px); /* Subtrai a altura do cabeçalho */
+            height: calc(100vh - 56px); /* Subtrai a altura do cabeçalho e o rodapé */
             border: none;
+            margin-top: 56px; /* Move o iframe para baixo para compensar a altura do cabeçalho */
         }
         .footer {
-            display: none; /* Rodapé oculto, será exibido apenas no conteúdo carregado, se necessário */
+            background-color: #ffffff;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            
+            display: none; /* Rodapé oculto por padrão */
+                font-size: 0.7rem;
+    color: #6c757d;
         }
+        .side-menu ul {
+    padding-left: 0;
+    position: relative;
+    margin-top: 60px;
+}
+        .side-menu li {
+            border-bottom: 1px solid #ddd;
+        }
+        .side-menu li a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+        }
+        .side-menu li a:hover {
+            background-color: #f1f1f1;
+        }
+        .close-menu-btn {
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            background: #000;
+            color: white;
+            border-radius: 50%;
+            padding: 10px;
+            position: fixed;
+            top: 15px; /* Ajuste da altura */
+            right: 15px; /* Ajuste da posição */
+            width: 40px; /* Largura do círculo */
+            height: 40px; /* Altura do círculo */
+            text-align: center;
+            line-height: 20px; /* Centraliza o "X" verticalmente */
+        }
+
+    .mb-3 {
+    margin-bottom: 0.4rem !important;
+}
+    
     </style>
 </head>
-<body class="d-flex flex-column">
+<body>
 
     <!-- Navbar -->
     <nav class="navbar navbar-light bg-white shadow-sm fixed-top">
@@ -57,6 +104,11 @@
     <div id="side-menu" class="side-menu bg-white shadow-lg d-none position-fixed top-0 end-0 h-100 p-3">
         <ul class="list-unstyled">
             <li class="mb-3">
+                <button class="close-menu-btn" id="close-menu-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </li>
+            <li class="mb-3">
                 <a href="?cont=home.html" class="text-dark fw-bold">
                     <i class="fas fa-home me-2"></i> Home <i class="fas fa-chevron-right float-end"></i>
                 </a>
@@ -66,7 +118,7 @@
                     <i class="fas fa-sign-in-alt me-2"></i> Login <i class="fas fa-chevron-right float-end"></i>
                 </a>
             </li>
-            <li>
+            <li class="mb-3">
                 <a href="?cont=locais.html" class="text-dark fw-bold">
                     <i class="fas fa-map-marker-alt me-2"></i> Locais <i class="fas fa-chevron-right float-end"></i>
                 </a>
@@ -79,11 +131,10 @@
         <iframe id="content-frame" src=""></iframe>
     </main>
 
-      <!-- Rodapé -->
-    <footer class="footer text-center py-3 bg-white">
+    <!-- Rodapé -->
+    <footer class="footer" id="footer">
         <p class="mb-0">&copy; 2024 WABES - Todos os direitos reservados</p>
     </footer>
-
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -112,10 +163,42 @@
         // Função para abrir o menu
         const menuToggle = document.getElementById('menu-toggle');
         const sideMenu = document.getElementById('side-menu');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
 
         // Evento para alternar visibilidade do menu
         menuToggle.addEventListener('click', function() {
             sideMenu.classList.toggle('d-none'); // Alterna entre mostrar e esconder o menu
+        });
+
+        // Fechar o menu ao clicar no botão "X"
+        closeMenuBtn.addEventListener('click', function() {
+            sideMenu.classList.add('d-none');
+        });
+
+        // Fechar o menu ao clicar fora dele
+        window.addEventListener('click', function(event) {
+            if (!sideMenu.contains(event.target) && !menuToggle.contains(event.target)) {
+                sideMenu.classList.add('d-none');
+            }
+        });
+
+        // Função para exibir o rodapé quando o iframe chegar ao final
+        const iframe = document.getElementById('content-frame');
+        const footer = document.getElementById('footer');
+
+        iframe.addEventListener('load', function() {
+            iframe.contentWindow.addEventListener('scroll', function() {
+                const iframeDoc = iframe.contentWindow.document;
+                const iframeHeight = iframeDoc.documentElement.scrollHeight;
+                const iframeScrollTop = iframe.contentWindow.scrollY + iframe.contentWindow.innerHeight;
+
+                // Exibe o rodapé quando o iframe chegar ao final da página
+                if (iframeScrollTop >= iframeHeight) {
+                    footer.style.display = 'block';
+                } else {
+                    footer.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
