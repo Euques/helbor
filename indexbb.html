@@ -41,6 +41,7 @@
             margin-top: auto;
             width: 100%;
             border-top: 1px solid #ddd;
+            display: none; /* Rodapé oculto por padrão */
         }
         .side-menu ul {
             padding-left: 0;
@@ -56,6 +57,12 @@
         }
         .side-menu li a:hover {
             background-color: #f1f1f1;
+        }
+        .close-menu-btn {
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
         }
     </style>
 </head>
@@ -75,6 +82,9 @@
 
     <!-- Menu Lateral -->
     <div id="side-menu" class="side-menu bg-white shadow-lg d-none position-fixed top-0 end-0 h-100 p-3">
+        <button class="close-menu-btn" id="close-menu-btn">
+            <i class="fas fa-times"></i>
+        </button>
         <ul class="list-unstyled">
             <li class="mb-3">
                 <a href="?cont=home.html" class="text-dark fw-bold">
@@ -100,7 +110,7 @@
     </main>
 
     <!-- Rodapé -->
-    <footer class="footer">
+    <footer class="footer" id="footer">
         <p class="mb-0">&copy; 2024 WABES - Todos os direitos reservados</p>
     </footer>
 
@@ -131,10 +141,16 @@
         // Função para abrir o menu
         const menuToggle = document.getElementById('menu-toggle');
         const sideMenu = document.getElementById('side-menu');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
 
         // Evento para alternar visibilidade do menu
         menuToggle.addEventListener('click', function() {
             sideMenu.classList.toggle('d-none'); // Alterna entre mostrar e esconder o menu
+        });
+
+        // Fechar o menu ao clicar no botão "X"
+        closeMenuBtn.addEventListener('click', function() {
+            sideMenu.classList.add('d-none');
         });
 
         // Fechar o menu ao clicar fora dele
@@ -142,6 +158,25 @@
             if (!sideMenu.contains(event.target) && !menuToggle.contains(event.target)) {
                 sideMenu.classList.add('d-none');
             }
+        });
+
+        // Função para exibir o rodapé quando o iframe chegar ao final
+        const iframe = document.getElementById('content-frame');
+        const footer = document.getElementById('footer');
+
+        iframe.addEventListener('load', function() {
+            iframe.contentWindow.addEventListener('scroll', function() {
+                const iframeDoc = iframe.contentWindow.document;
+                const iframeHeight = iframeDoc.documentElement.scrollHeight;
+                const iframeScrollTop = iframe.contentWindow.scrollY + iframe.contentWindow.innerHeight;
+
+                // Exibe o rodapé quando o iframe chegar ao final da página
+                if (iframeScrollTop >= iframeHeight) {
+                    footer.style.display = 'block';
+                } else {
+                    footer.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
