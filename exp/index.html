@@ -223,7 +223,7 @@
 
           if (docSnap.exists()) {
             const data = docSnap.data()
-            const currentUrl = window.location.href
+            const currentUrl = window.top.location.href
 
             document.getElementById('expositorName').textContent =
               data.name || ''
