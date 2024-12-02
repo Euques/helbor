@@ -158,10 +158,12 @@
                 ${
                   data.logoURL
                     ? `<div class="logo-overlay">
+                    <a href="?cont=exp/?ex=${uid}">
                         <img
                           src="${data.logoURL}"
                           alt="Logo de ${data.name || 'Expositor'}"
                         />
+                        </a>
                       </div>`
                     : ''
                 }
@@ -173,7 +175,7 @@
                   <span class="badge bg-secondary">${data.category || 'Sem categoria'}</span>
                 </div>
                 <div class="card-footer text-center">
-                  <a href="exp/?ex=${uid}" class="btn btn-custom">Ver Mais</a>
+                  <a href="?cont=exp/?ex=${uid}" class="btn btn-custom">Ver Mais</a>
                 </div>
               </div>
             `;
