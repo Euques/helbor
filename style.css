@@ -1,2 +1,78 @@
-/* Tipografia e layout */
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa; /* Cor de fundo */
+        }
+        .navbar {
+            height: 56px;
+        }
+        .side-menu {
+            width: 300px;
+            z-index: 1050;
+        }
+        .side-menu.d-none {
+            display: none !important;
+        }
+        iframe {
+            width: 100%;
+            height: calc(100vh - 56px); /* Subtrai a altura do cabeçalho e o rodapé */
+            border: none;
+            margin-top: 56px; /* Move o iframe para baixo para compensar a altura do cabeçalho */
+        }
+        .footer {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            
+            display: none; /* Rodapé oculto por padrão */
+                font-size: 0.7rem;
+    color: #6c757d;
+        }
+        .side-menu ul {
+    padding-left: 0;
+    position: relative;
+    margin-top: 60px;
+}
+        .side-menu li {
+            border-bottom: 1px solid #ddd;
+        }
+        .side-menu li a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+        }
+        .side-menu li a:hover {
+            background-color: #f1f1f1;
+        }
+        .close-menu-btn {
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            background: #000;
+            color: white;
+            border-radius: 50%;
+            padding: 10px;
+            position: fixed;
+            top: 15px; /* Ajuste da altura */
+            right: 15px; /* Ajuste da posição */
+            width: 40px; /* Largura do círculo */
+            height: 40px; /* Altura do círculo */
+            text-align: center;
+            line-height: 20px; /* Centraliza o "X" verticalmente */
+        }
+
+    .mb-3 {
+    margin-bottom: 0.4rem !important;
+}
+    
+
 
