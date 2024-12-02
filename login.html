@@ -126,8 +126,8 @@
           window.location.href = `?cont=/exp/?ex=${result.user.uid}`;
         } else {
           result = await createUserWithEmailAndPassword(auth, email, password);
-          await setDoc(doc(db, 'users', result.user.uid), { email });
-          window.location.href = `?cont=/user/?u=${result.user.uid}`;
+          await setDoc(doc(db, '/users', result.user.uid), { email });
+          window.location.href = `/?cont=/user/?u=${result.user.uid}`;
         }
       } catch (error) {
         statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
@@ -149,9 +149,9 @@
             displayName: user.displayName,
             photoURL: user.photoURL
           });
-          window.location.href = `?cont=/user/?u=${user.uid}`;
+          window.location.href = `/?cont=/user/?u=${user.uid}`;
         } else {
-          window.location.href = `?cont=/exp/?ex=${user.uid}`;
+          window.location.href = `/?cont=/exp/?ex=${user.uid}`;
         }
       } catch (error) {
         statusDiv.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
