@@ -279,7 +279,9 @@ Acesse aqui: ${currentUrl}
           productItem.classList.add('product-item')
 
           productItem.innerHTML = `
+        <a href="../../?cont=${encodeURIComponent(`iten/?p=${uid}&id=${doc.id}`)}" target="_top" class="action-button">
         <img src="${data.imageURL}" alt="${data.name}" />
+        </a>
         <div class="product-info">
           <div class="product-name">${data.name}</div>
           <div class="product-description">${data.description}</div>
