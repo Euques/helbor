@@ -46,6 +46,7 @@
         }
         .side-menu ul {
             padding-left: 0;
+            position: relative;
         }
         .side-menu li {
             border-bottom: 1px solid #ddd;
@@ -60,7 +61,7 @@
             background-color: #f1f1f1;
         }
         .close-menu-btn {
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
             border: none;
             background: #000;
@@ -70,6 +71,10 @@
             position: absolute;
             top: 15px; /* Ajuste da altura */
             right: 15px; /* Ajuste da posição */
+            width: 40px; /* Largura do círculo */
+            height: 40px; /* Altura do círculo */
+            text-align: center;
+            line-height: 20px; /* Centraliza o "X" verticalmente */
         }
     </style>
 </head>
@@ -89,10 +94,12 @@
 
     <!-- Menu Lateral -->
     <div id="side-menu" class="side-menu bg-white shadow-lg d-none position-fixed top-0 end-0 h-100 p-3">
-        <button class="close-menu-btn" id="close-menu-btn">
-            <i class="fas fa-times"></i>
-        </button>
         <ul class="list-unstyled">
+            <li>
+                <button class="close-menu-btn" id="close-menu-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </li>
             <li class="mb-3">
                 <a href="?cont=home.html" class="text-dark fw-bold">
                     <i class="fas fa-home me-2"></i> Home <i class="fas fa-chevron-right float-end"></i>
