@@ -281,13 +281,13 @@ Acesse aqui: ${currentUrl}
           productItem.innerHTML = `
         <a href="../../?cont=${encodeURIComponent(`iten/?p=${uid}&id=${doc.id}`)}" target="_top" >
         <img src="${data.imageURL}" alt="${data.name}" />
-        
+        </a>
         <div class="product-info">
           <div class="product-name">${data.name}</div>
           <div class="product-description">${data.description}</div>
           <div class="product-price">${data.price}</div>
         </div>
-       <!--  <a href="../../?cont=${encodeURIComponent(`iten/?p=${uid}&id=${doc.id}`)}" target="_top" class="action-button"> -->
+       <a href="../../?cont=${encodeURIComponent(`iten/?p=${uid}&id=${doc.id}`)}" target="_top" class="action-button">
           <i class="fa fa-chevron-right"></i>
         </a>
       `
