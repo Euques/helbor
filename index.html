@@ -41,22 +41,25 @@
             border: none;
             margin-top: 56px; /* Move o iframe para baixo para compensar a altura do cabeçalho */
         }
-     #footer {
-    position: absolute;
-    bottom: 0; /* Fixa o rodapé ao fundo do conteúdo */
+   /* Estilo inicial do rodapé */
+#footer {
+    position: fixed;
+    bottom: -100px; /* Começa fora da tela */
     left: 0;
-    width: 100%; /* Garante que o rodapé ocupe toda a largura */
+    width: 100%; /* Ocupa a largura inteira */
     background-color: #333; /* Cor do fundo do rodapé */
     color: white;
     text-align: center;
     padding: 20px 0;
-    opacity: 0; /* Inicialmente invisível */
-    transition: opacity 0.5s ease;
+    opacity: 0; /* Inicia invisível */
+    transition: bottom 0.3s ease, opacity 0.3s ease;
 }
 
 #footer.visible {
-    opacity: 1; /* Torna o rodapé visível quando necessário */
+    bottom: 0; /* Fixa o rodapé ao fundo */
+    opacity: 1; /* Torna o rodapé visível */
 }
+
     
        
     
@@ -206,7 +209,7 @@
             }
         });
 
-// Função para colar o rodapé no final do conteúdo mostrado pelo iframe
+// Função para exibir o rodapé quando o iframe chegar ao final
 const iframe = document.getElementById('content-frame');
 const footer = document.getElementById('footer');
 
@@ -216,11 +219,11 @@ iframe.addEventListener('load', function() {
         const iframeHeight = iframeDoc.documentElement.scrollHeight;
         const iframeScrollTop = iframe.contentWindow.scrollY + iframe.contentWindow.innerHeight;
 
-        // Mostra o rodapé quando o scroll atingir o final do conteúdo
+        // Exibe o rodapé quando o scroll atingir o final da página
         if (iframeScrollTop >= iframeHeight - iframe.contentWindow.innerHeight) {
-            footer.classList.add('visible');
+            footer.classList.add('visible'); // Torna o rodapé visível
         } else {
-            footer.classList.remove('visible');
+            footer.classList.remove('visible'); // Esconde o rodapé
         }
     });
 });
