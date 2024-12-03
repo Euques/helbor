@@ -5,147 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sobre - Feira de Garagem</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
+    body {
       font-family: 'Roboto', sans-serif;
-      display: flex;
-      flex-direction: column;
-      background-color: #f8f9fa;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 20px;
     }
 
-    .navbar {
-      height: 56px;
-      background-color: #007bff;
-    }
-
-    .hero {
-      background: url('https://www.minasgerais.com.br/imagens/atracoes/1508767456pznGZ0L2rj.jpg') center/cover no-repeat;
-      color: white;
-      text-align: center;
-      padding: 100px 20px;
-    }
-
-    .hero h1 {
+    h1 {
       font-size: 2.5rem;
-      font-weight: bold;
+      margin-bottom: 20px;
+      color: #0056b3;
     }
 
-    .hero p {
-      font-size: 1.2rem;
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
     }
 
-    .section-title {
-      text-align: center;
-      margin: 40px 0;
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #333;
+    .highlight {
+      background-color: #e9ecef;
+      border-left: 5px solid #007bff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
     }
 
-    .card {
-      border: none;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    ul {
+      padding-left: 20px;
+      margin-bottom: 20px;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    ul li {
+      margin-bottom: 10px;
     }
 
-    .card-img-top {
-      border-radius: 50%;
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      margin: 15px auto;
-      border: 5px solid #f8f9fa;
-    }
-
-    .social-icons a {
-      margin: 0 10px;
-      color: #333;
-      font-size: 1.2rem;
-      transition: color 0.3s;
-    }
-
-    .social-icons a:hover {
+    a {
       color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .btn-primary {
+      background-color: #0056b3;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #004494;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      font-size: 0.9rem;
+      color: #666;
     }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#"><i class="fas fa-store"></i> Feira de Garagem</a>
-    </div>
-  </nav>
 
-  <div class="hero">
-    <h1>Sobre a Feira de Garagem</h1>
-    <p>Transformando espaços urbanos em pontos de conexão, criatividade e empreendedorismo desde 2019.</p>
+  <h1>Sobre a Feira de Garagem</h1>
+  <div class="highlight">
+    Fundada em 2019, a Feira de Garagem conecta expositores e clientes em um ambiente vibrante e criativo. Desde sua criação em São Paulo, a feira celebra o artesanato, a inovação e o empreendedorismo local.
+  </div>
+  <p>Nosso objetivo é oferecer um espaço acessível para que pequenos empreendedores possam expor seus produtos e compartilhar suas histórias. Acreditamos no poder das conexões humanas e no impacto que a criatividade pode trazer para as comunidades urbanas.</p>
+
+  <h2>Missão</h2>
+  <p>Promover a cultura local e o empreendedorismo, valorizando a diversidade de talentos e criando experiências inesquecíveis para expositores e visitantes.</p>
+
+  <h2>Visão</h2>
+  <p>Ser referência em feiras urbanas, expandindo nossa atuação para outras cidades e continuando a impactar positivamente a economia criativa.</p>
+
+  <h2>Valores</h2>
+  <ul>
+    <li>Inclusão e diversidade</li>
+    <li>Respeito ao meio ambiente</li>
+    <li>Valorização do artesanato e da cultura local</li>
+    <li>Compromisso com a qualidade e inovação</li>
+  </ul>
+
+  <p>Quer saber mais? <a href="#">Entre em contato</a> ou venha nos visitar na próxima edição da feira!</p>
+
+  <div class="footer">
+    © 2024 Feira de Garagem. Todos os direitos reservados.
   </div>
 
-  <div class="container">
-    <div class="section-title">Nossa História</div>
-    <p class="text-center">
-      Fundada em 2019, a Feira de Garagem conecta expositores e clientes em um ambiente vibrante e criativo. Desde a sua criação em São Paulo, a feira celebra o artesanato, a inovação e o empreendedorismo local.
-    </p>
-  </div>
-
-  <div class="container">
-    <div class="section-title">Idealizadores</div>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card">
-          <img src="https://res.cloudinary.com/beleza-na-web/image/upload/f_auto,fl_progressive,q_auto:eco/v1709551625/loucas-por-beleza/drjones/b313245415d26ce79dd9877f5140617c.png" class="card-img-top" alt="Idealizador 1">
-          <div class="card-body text-center">
-            <h5 class="card-title">João Silva</h5>
-            <p class="card-text">Com 15 anos de experiência no varejo, João conecta talentos a oportunidades únicas.</p>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card">
-          <img src="https://media.istockphoto.com/id/1303539316/pt/foto/one-beautiful-woman-looking-at-the-camera-in-profile.jpg?s=612x612&w=0&k=20&c=eFSneTQ09CGxWNrDjDszEoLn8S4UYtSBeKBwppSP5aQ=" class="card-img-top" alt="Idealizador 2">
-          <div class="card-body text-center">
-            <h5 class="card-title">Maria Oliveira</h5>
-            <p class="card-text">Designer e artesã, Maria encanta com sua criatividade e paixão pelo novo.</p>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card">
-          <img src="https://neopix.com.br/wp-content/uploads//2021/04/fotografo-empresarial.jpg" class="card-img-top" alt="Idealizador 3">
-          <div class="card-body text-center">
-            <h5 class="card-title">Carlos Almeida</h5>
-            <p class="card-text">Especialista em logística, Carlos transforma cada evento em uma experiência memorável.</p>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
