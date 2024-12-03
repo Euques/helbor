@@ -10,10 +10,14 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      line-height: 1.6;
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      background-color: #f8f9fa;
     }
 
     .hero {
@@ -35,20 +39,26 @@
 
     .section-title {
       text-align: center;
-      margin-bottom: 40px;
-      font-size: 2rem;
-      color: #333;
+      margin: 40px 0 20px;
+      font-size: 1.8rem;
       font-weight: bold;
+      color: #007bff;
+    }
+
+    .container {
+      padding: 20px;
     }
 
     .card {
       border: none;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
     .card-img-top {
@@ -57,7 +67,7 @@
       height: 150px;
       object-fit: cover;
       margin: 0 auto;
-      border: 5px solid #f9f9f9;
+      border: 3px solid #f8f9fa;
     }
 
     .card-body {
@@ -65,18 +75,19 @@
     }
 
     .card-title {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: bold;
-      margin: 15px 0 10px;
+      margin: 10px 0;
+      color: #333;
     }
 
     .card-text {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #555;
     }
 
     .social-icons a {
-      margin: 0 10px;
+      margin: 0 8px;
       color: #333;
       font-size: 1.2rem;
       transition: color 0.3s;
@@ -95,28 +106,28 @@
   </div>
 
   <!-- History Section -->
-  <div class="container mt-5">
+  <div class="container">
     <div class="section-title">Nossa História</div>
     <p class="text-center">
-      Fundada em 2019, a Feira de Garagem é mais do que um evento – é uma experiência que reúne pessoas apaixonadas por artesanato, produtos únicos e ideias criativas. Realizada nos prédios da vibrante cidade de São Paulo, nossa feira conecta expositores talentosos a renomados profissionais das áreas de varejo e atacado, proporcionando um ambiente de colaboração e crescimento.
+      Fundada em 2019, a Feira de Garagem é mais do que um evento – é uma experiência que reúne pessoas apaixonadas por artesanato, produtos únicos e ideias criativas.
     </p>
     <p class="text-center">
-      Valorizamos o trabalho artesanal e a singularidade de cada expositor, celebrando a diversidade e promovendo a inovação. Desde sua criação, a feira se tornou um espaço essencial para aqueles que buscam qualidade e autenticidade em cada produto.
+      Valorizamos o trabalho artesanal e a singularidade de cada expositor, celebrando a diversidade e promovendo a inovação.
     </p>
   </div>
 
   <!-- Idealizers Section -->
-  <div class="container mt-5">
+  <div class="container">
     <div class="section-title">Idealizadores</div>
     <div class="row g-4">
-      <!-- Idealizer 1 -->
+      <!-- Idealizer Cards -->
       <div class="col-md-4">
         <div class="card">
-          <img src="https://res.cloudinary.com/beleza-na-web/image/upload/f_auto,fl_progressive,q_auto:eco/v1709551625/loucas-por-beleza/drjones/b313245415d26ce79dd9877f5140617c.png" class="card-img-top" alt="Idealizador 1">
+          <img src="https://res.cloudinary.com/beleza-na-web/image/upload/f_auto,fl_progressive,q_auto:eco/v1709551625/loucas-por-beleza/drjones/b313245415d26ce79dd9877f5140617c.png" class="card-img-top" alt="João Silva">
           <div class="card-body">
             <h5 class="card-title">João Silva</h5>
             <p class="card-text">
-              Empreendedor com 15 anos de experiência no varejo, João é apaixonado por conectar talentos e transformar ideias em realidade.
+              Empreendedor com 15 anos de experiência no varejo.
             </p>
             <div class="social-icons">
               <a href="#"><i class="fab fa-instagram"></i></a>
@@ -126,40 +137,7 @@
           </div>
         </div>
       </div>
-      <!-- Idealizer 2 -->
-      <div class="col-md-4">
-        <div class="card">
-          <img src="https://media.istockphoto.com/id/1303539316/pt/foto/one-beautiful-woman-looking-at-the-camera-in-profile.jpg?s=612x612&w=0&k=20&c=eFSneTQ09CGxWNrDjDszEoLn8S4UYtSBeKBwppSP5aQ=" class="card-img-top" alt="Idealizador 2">
-          <div class="card-body">
-            <h5 class="card-title">Maria Oliveira</h5>
-            <p class="card-text">
-              Designer e artesã, Maria é a responsável por trazer inovação e estilo a cada edição da feira. Sua visão criativa encanta a todos.
-            </p>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Idealizer 3 -->
-      <div class="col-md-4">
-        <div class="card">
-          <img src="https://neopix.com.br/wp-content/uploads//2021/04/fotografo-empresarial.jpg"  class="card-img-top" alt="Idealizador 3">
-          <div class="card-body">
-            <h5 class="card-title">Carlos Almeida</h5>
-            <p class="card-text">
-              Com expertise em logística e gestão, Carlos garante que cada evento seja organizado e inesquecível para expositores e visitantes.
-            </p>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Repeat for other idealizers -->
     </div>
   </div>
 
