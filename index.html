@@ -199,21 +199,26 @@
             }
         });
 
-// Função para exibir o rodapé quando o iframe chegar ao final ou o conteúdo for pequeno
+// Função para adicionar uma margem no final do conteúdo do iframe
 const iframe = document.getElementById('content-frame');
 const footer = document.getElementById('footer');
 
 iframe.addEventListener('load', function() {
+    const iframeDoc = iframe.contentWindow.document;
+
+    // Adiciona uma margem no final do conteúdo
+    const marginEnd = 60;  // Ajuste o valor conforme necessário (em pixels)
+    iframeDoc.body.style.paddingBottom = `${marginEnd}px`;
+
     iframe.contentWindow.addEventListener('scroll', function() {
-        const iframeDoc = iframe.contentWindow.document;
-        const iframeHeight = iframeDoc.documentElement.scrollHeight; // altura total do conteúdo
-        const viewportHeight = iframe.contentWindow.innerHeight; // altura visível
-        const iframeScrollTop = iframe.contentWindow.scrollY; // deslocamento do scroll
+        const iframeHeight = iframeDoc.documentElement.scrollHeight;
+        const viewportHeight = iframe.contentWindow.innerHeight;
+        const iframeScrollTop = iframe.contentWindow.scrollY;
 
         // Margem de tolerância para garantir precisão
         const tolerance = 5; // ajuste conforme necessário
 
-        // Verifica se o iframe chegou ao final e o conteúdo foi completamente rolado
+        // Exibe o rodapé quando o iframe chegar ao final ou se o conteúdo for pequeno
         if (iframeScrollTop + viewportHeight >= iframeHeight - tolerance) {
             footer.style.display = 'block';
         } else {
@@ -221,6 +226,7 @@ iframe.addEventListener('load', function() {
         }
     });
 });
+
 
 
     </script>
