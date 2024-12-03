@@ -44,21 +44,22 @@
    /* Estilo inicial do rodapé */
 #footer {
     position: fixed;
-    bottom: -100px; /* Começa fora da tela */
+    bottom: -100px; /* Inicialmente fora da tela */
     left: 0;
-    width: 100%; /* Ocupa a largura inteira */
-    background-color: #333; /* Cor do fundo do rodapé */
+    width: 100%;
+    background-color: #333;
     color: white;
     text-align: center;
     padding: 20px 0;
-    opacity: 0; /* Inicia invisível */
+    opacity: 0; /* Começa invisível */
     transition: bottom 0.3s ease, opacity 0.3s ease;
 }
 
 #footer.visible {
-    bottom: 0; /* Fixa o rodapé ao fundo */
+    bottom: 0; /* Coloca o rodapé na parte inferior da tela */
     opacity: 1; /* Torna o rodapé visível */
 }
+
 
     
        
@@ -209,7 +210,6 @@
             }
         });
 
-// Função para exibir o rodapé quando o iframe chegar ao final
 const iframe = document.getElementById('content-frame');
 const footer = document.getElementById('footer');
 
@@ -219,14 +219,15 @@ iframe.addEventListener('load', function() {
         const iframeHeight = iframeDoc.documentElement.scrollHeight;
         const iframeScrollTop = iframe.contentWindow.scrollY + iframe.contentWindow.innerHeight;
 
-        // Exibe o rodapé quando o scroll atingir o final da página
+        // A lógica aqui agora considera quando o conteúdo realmente terminou
         if (iframeScrollTop >= iframeHeight - iframe.contentWindow.innerHeight) {
-            footer.classList.add('visible'); // Torna o rodapé visível
+            footer.classList.add('visible'); // Exibe o rodapé quando estiver no final
         } else {
-            footer.classList.remove('visible'); // Esconde o rodapé
+            footer.classList.remove('visible'); // Esconde o rodapé enquanto o scroll não chega ao final
         }
     });
 });
+
 
 
 
