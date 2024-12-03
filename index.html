@@ -199,7 +199,7 @@
             }
         });
 
-       // Função para exibir o rodapé quando o iframe chegar ao final
+// Função para exibir o rodapé quando o iframe chegar ao final ou o conteúdo for pequeno
 const iframe = document.getElementById('content-frame');
 const footer = document.getElementById('footer');
 
@@ -207,19 +207,21 @@ iframe.addEventListener('load', function() {
     iframe.contentWindow.addEventListener('scroll', function() {
         const iframeDoc = iframe.contentWindow.document;
         const iframeHeight = iframeDoc.documentElement.scrollHeight;
-        const iframeScrollTop = iframe.contentWindow.scrollY + iframe.contentWindow.innerHeight;
+        const viewportHeight = iframe.contentWindow.innerHeight;
+        const iframeScrollTop = iframe.contentWindow.scrollY + viewportHeight;
 
         // Margem de tolerância para garantir precisão
         const tolerance = 5; // ajuste conforme necessário
 
-        // Exibe o rodapé quando o iframe chegar ao final da página com margem
-        if (iframeScrollTop >= iframeHeight - tolerance) {
+        // Exibe o rodapé se o iframe chegar ao final ou se o conteúdo for pequeno
+        if (iframeScrollTop >= iframeHeight - tolerance || iframeHeight <= viewportHeight) {
             footer.style.display = 'block';
         } else {
             footer.style.display = 'none';
         }
     });
 });
+
     </script>
 </body>
 </html>
