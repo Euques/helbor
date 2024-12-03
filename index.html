@@ -52,8 +52,9 @@
             display: none; /* Rodapé oculto por padrão */
                 font-size: 0.7rem;
     color: #6c757d;
-            opacity: 0; /* Totalmente transparente */
-    transition: opacity 0.5s ease-in-out; /* Transição suave para a opacidade */
+          opacity: 0; /* Inicialmente o rodapé está invisível */
+    visibility: hidden; /* Rodapé não será visível */
+    transition: opacity 0.5s ease-in-out, visibility 0s 0.5s; /* Transição de opacidade e visibilidade */
         }
     
         .side-menu ul {
@@ -214,18 +215,15 @@ iframe.addEventListener('load', function() {
 
         // Exibe o rodapé com fade quando o scroll atingir o final da página
         if (iframeScrollTop >= iframeHeight - 1) {
-            footer.style.display = 'block'; // Torna o rodapé visível
-            setTimeout(function() {
-                footer.style.opacity = 1; // Aumenta a opacidade para 1, criando o efeito fade
-            }, 10); // Timeout para garantir que a transição seja aplicada
+            footer.style.visibility = 'visible'; // Torna o rodapé visível
+            footer.style.opacity = 1; // Aumenta a opacidade para 1, criando o efeito fade
         } else {
             footer.style.opacity = 0; // Torna o rodapé invisível
-            setTimeout(function() {
-                footer.style.display = 'none'; // Esconde o rodapé após a animação
-            }, 500); // Aguarda o tempo da transição (500ms)
+            footer.style.visibility = 'hidden'; // Esconde o rodapé depois da animação
         }
     });
 });
+
 
 
 
